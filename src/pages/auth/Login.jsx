@@ -24,7 +24,10 @@ function Login({ restrictedRole }) {
     setError('');
     try {
       await login(email, password, role);
-      const from = location.state?.from?.pathname || (role === 'company' ? '/company/dashboard' : '/student/dashboard');
+      const from = location.state?.from?.pathname ||
+        (role === 'admin' ? '/admin/dashboard' :
+          role === 'company' ? '/company/dashboard' :
+            '/student/dashboard');
       navigate(from, { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid credentials');

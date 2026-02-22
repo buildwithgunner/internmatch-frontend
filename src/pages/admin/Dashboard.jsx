@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Briefcase, FileText, Building2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Users, Briefcase, FileText, Building2, CheckCircle, AlertCircle, FileDown, Loader2 } from 'lucide-react';
 import api from '../../services/api.js';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -14,6 +16,8 @@ function AdminDashboard() {
   });
 
   const [loading, setLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
+  const dashboardRef = useRef(null);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -29,6 +33,70 @@ function AdminDashboard() {
 
     fetchStats();
   }, []);
+
+  const handleExportPDF = async () => {
+    const element = dashboardRef.current;
+    if (!element) return;
+
+    setIsExporting(true);
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#f8fafc',
+        onclone: (clonedDoc) => {
+          const elements = clonedDoc.getElementsByTagName('*');
+          for (const el of elements) {
+            const computed = window.getComputedStyle(el);
+            const properties = [
+              'color',
+              'backgroundColor',
+              'borderColor',
+              'borderTopColor',
+              'borderBottomColor',
+              'borderLeftColor',
+              'borderRightColor',
+              'backgroundImage',
+              'fill',
+              'stroke'
+            ];
+
+            properties.forEach(prop => {
+              const value = computed[prop];
+              if (value && value.includes('oklch')) {
+                if (prop === 'backgroundImage') {
+                  el.style.backgroundImage = 'none';
+                  if (computed.webkitBackgroundClip === 'text' || computed.backgroundClip === 'text') {
+                    el.style.color = '#4f46e5';
+                    el.style.webkitTextFillColor = '#4f46e5';
+                  }
+                } else if (prop === 'backgroundColor') {
+                  el.style.backgroundColor = 'transparent';
+                } else {
+                  el.style[prop] = 'currentColor';
+                }
+              }
+            });
+          }
+        }
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.save(`Admin_Dashboard_Summary_${new Date().toLocaleDateString()}.pdf`);
+    } catch (error) {
+      console.error('Export failed:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const statCards = [
     { title: 'Total Students', value: stats.total_students, icon: Users, color: 'text-blue-600' },
@@ -48,23 +116,37 @@ function AdminDashboard() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8">
-      <div>
-        <h1 className="text-4xl font-extrabold">Admin Dashboard</h1>
-        <p className="text-base-content/60 mt-2">Platform overview and management tools</p>
+    <div className="max-w-7xl mx-auto p-6 space-y-8 bg-[#f8fafc]" ref={dashboardRef}>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">Admin Dashboard</h1>
+          <p className="text-slate-500 mt-2 font-medium uppercase text-[10px] tracking-widest">Platform overview and management tools</p>
+        </div>
+
+        <button
+          onClick={handleExportPDF}
+          disabled={isExporting}
+          className="group flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm text-sm font-bold text-slate-600 hover:border-indigo-500 hover:text-indigo-600 transition-all disabled:opacity-50"
+        >
+          {isExporting ? (
+            <Loader2 size={18} className="animate-spin" />
+          ) : (
+            <FileDown size={18} className="group-hover:translate-y-0.5 transition-transform" />
+          )}
+          {isExporting ? 'Generating...' : 'Export PDF'}
+        </button>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {statCards.map((stat, i) => (
-          <div key={i} className="card bg-base-100 shadow-lg border border-base-200">
-            <div className="card-body">
+          <div key={i} className="card bg-white shadow-sm border border-slate-100 rounded-[2rem]">
+            <div className="card-body p-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-base-content/60">{stat.title}</p>
-                  <p className="text-3xl font-black mt-2">{stat.value}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.title}</p>
+                  <p className="text-3xl font-black mt-2 text-slate-900">{stat.value.toLocaleString()}</p>
                 </div>
-                <div className={`p-4 rounded-xl bg-base-200 ${stat.color}`}>
+                <div className={`p-4 rounded-2xl bg-slate-50 ${stat.color}`}>
                   <stat.icon size={32} />
                 </div>
               </div>
@@ -73,29 +155,28 @@ function AdminDashboard() {
         ))}
       </div>
 
-      {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Link to="/admin/manage-users" className="card bg-base-100 hover:shadow-xl transition-shadow border border-base-200">
+        <Link to="/admin/manage-users" className="card bg-white hover:shadow-xl transition-shadow border border-slate-100 rounded-[2rem]">
           <div className="card-body items-center text-center py-10">
             <Users size={48} className="text-primary mb-4" />
-            <h3 className="text-xl font-bold">Manage Users</h3>
-            <p className="text-base-content/60 mt-2">View, verify, or suspend accounts</p>
+            <h3 className="text-xl font-bold text-slate-900 tracking-tight">Manage Users</h3>
+            <p className="text-slate-500 text-sm mt-2">View, verify, or suspend accounts</p>
           </div>
         </Link>
 
-        <Link to="/admin/manage-postings" className="card bg-base-100 hover:shadow-xl transition-shadow border border-base-200">
+        <Link to="/admin/manage-postings" className="card bg-white hover:shadow-xl transition-shadow border border-slate-100 rounded-[2rem]">
           <div className="card-body items-center text-center py-10">
             <Briefcase size={48} className="text-secondary mb-4" />
-            <h3 className="text-xl font-bold">Manage Postings</h3>
-            <p className="text-base-content/60 mt-2">Review and moderate internship listings</p>
+            <h3 className="text-xl font-bold text-slate-900 tracking-tight">Manage Postings</h3>
+            <p className="text-slate-500 text-sm mt-2">Review and moderate internship listings</p>
           </div>
         </Link>
 
-        <Link to="/admin/reports" className="card bg-base-100 hover:shadow-xl transition-shadow border border-base-200">
+        <Link to="/admin/reports" className="card bg-white hover:shadow-xl transition-shadow border border-slate-100 rounded-[2rem]">
           <div className="card-body items-center text-center py-10">
             <FileText size={48} className="text-accent mb-4" />
-            <h3 className="text-xl font-bold">Reports</h3>
-            <p className="text-base-content/60 mt-2">Analytics and platform insights</p>
+            <h3 className="text-xl font-bold text-slate-900 tracking-tight">Reports</h3>
+            <p className="text-slate-500 text-sm mt-2">Analytics and platform insights</p>
           </div>
         </Link>
       </div>
