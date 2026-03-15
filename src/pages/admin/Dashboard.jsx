@@ -9,6 +9,7 @@ function AdminDashboard() {
   const [stats, setStats] = useState({
     total_students: 0,
     total_companies: 0,
+    total_recruiters: 0,
     total_internships: 0,
     total_applications: 0,
     active_internships: 0,
@@ -101,6 +102,7 @@ function AdminDashboard() {
   const statCards = [
     { title: 'Total Students', value: stats.total_students, icon: Users, color: 'text-blue-600' },
     { title: 'Total Companies', value: stats.total_companies, icon: Building2, color: 'text-purple-600' },
+    { title: 'Total Recruiters', value: stats.total_recruiters, icon: Users, color: 'text-indigo-600' },
     { title: 'Total Internships', value: stats.total_internships, icon: Briefcase, color: 'text-green-600' },
     { title: 'Total Applications', value: stats.total_applications, icon: FileText, color: 'text-orange-600' },
     { title: 'Active Postings', value: stats.active_internships, icon: CheckCircle, color: 'text-emerald-600' },
