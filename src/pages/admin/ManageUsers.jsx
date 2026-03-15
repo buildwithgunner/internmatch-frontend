@@ -11,6 +11,13 @@ function ManageUsers() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Auto-refresh selected user if modal is open and theme changes (optional, but keep UI in sync)
+  useEffect(() => {
+    if (isModalOpen && selectedUser) {
+      // resync modal if needed, though DaisyUI handles CSS automatically
+    }
+  }, [isModalOpen]);
+
   const fetchUsers = async () => {
     try {
       const res = await api.get('/admin/users');
@@ -151,37 +158,37 @@ function ManageUsers() {
   return (
     <div className="space-y-10 pb-20">
       <div className="flex flex-col gap-2">
-        <h1 className="text-4xl font-extrabold tracking-tight text-white">Manage Users</h1>
-        <p className="text-lg text-slate-400">View, verify, suspend, or delete user accounts</p>
+        <h1 className="text-4xl font-extrabold tracking-tight text-base-content">Manage Users</h1>
+        <p className="text-lg text-base-content/60">View, verify, suspend, or delete user accounts</p>
       </div>
 
       {/* Stats Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card bg-slate-900 border border-slate-800 p-6 shadow-xl">
-          <p className="text-slate-400 text-sm font-medium uppercase tracking-wider">Total Students</p>
-          <h3 className="text-3xl font-bold text-white mt-1">{students.length}</h3>
+        <div className="card bg-base-100 border border-base-200 p-6 shadow-xl">
+          <p className="text-base-content/50 text-sm font-medium uppercase tracking-wider">Total Students</p>
+          <h3 className="text-3xl font-bold text-base-content mt-1">{students.length}</h3>
         </div>
-        <div className="card bg-slate-900 border border-slate-800 p-6 shadow-xl">
-          <p className="text-slate-400 text-sm font-medium uppercase tracking-wider">Total Recruiters</p>
-          <h3 className="text-3xl font-bold text-white mt-1">{recruiters.length}</h3>
+        <div className="card bg-base-100 border border-base-200 p-6 shadow-xl">
+          <p className="text-base-content/50 text-sm font-medium uppercase tracking-wider">Total Recruiters</p>
+          <h3 className="text-3xl font-bold text-base-content mt-1">{recruiters.length}</h3>
         </div>
-        <div className="card bg-slate-900 border border-slate-800 p-6 shadow-xl">
-          <p className="text-slate-400 text-sm font-medium uppercase tracking-wider">Total Companies</p>
-          <h3 className="text-3xl font-bold text-white mt-1">{companies.length}</h3>
+        <div className="card bg-base-100 border border-base-200 p-6 shadow-xl">
+          <p className="text-base-content/50 text-sm font-medium uppercase tracking-wider">Total Companies</p>
+          <h3 className="text-3xl font-bold text-base-content mt-1">{companies.length}</h3>
         </div>
       </div>
 
       {/* Companies Section */}
       <section className="space-y-4">
         <div className="flex justify-between items-center px-1">
-          <h2 className="text-2xl font-bold text-slate-200">Companies</h2>
+          <h2 className="text-2xl font-bold text-base-content">Companies</h2>
           <span className="badge badge-primary">{companies.length} Total</span>
         </div>
-        <div className="card bg-slate-900/50 border border-slate-800 shadow-2xl overflow-hidden">
+        <div className="card bg-base-100 border border-base-200 shadow-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="table w-full">
-              <thead className="bg-slate-800/50">
-                <tr className="text-slate-400 border-b border-slate-800">
+              <thead className="bg-base-200/50">
+                <tr className="text-base-content/60 border-b border-base-200">
                   <th className="py-4 font-semibold uppercase text-xs tracking-widest">Company Name</th>
                   <th className="py-4 font-semibold uppercase text-xs tracking-widest">Email Address</th>
                   <th className="py-4 font-semibold uppercase text-xs tracking-widest text-center">Verification</th>
@@ -189,9 +196,9 @@ function ManageUsers() {
                   <th className="py-4 font-semibold uppercase text-xs tracking-widest text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-base-200">
                 {companies.map(company => (
-                  <tr key={`company-${company.id}`} className="hover:bg-white/5 transition-colors">
+                  <tr key={`company-${company.id}`} className="hover:bg-base-content/5 transition-colors">
                     <td className="py-4">
                       <div className="font-bold text-slate-200">{company.name}</div>
                     </td>
@@ -239,28 +246,28 @@ function ManageUsers() {
       {/* Recruiters Section */}
       <section className="space-y-4">
         <div className="flex justify-between items-center px-1">
-          <h2 className="text-2xl font-bold text-slate-200">Recruiters</h2>
+          <h2 className="text-2xl font-bold text-base-content">Recruiters</h2>
           <span className="badge badge-primary">{recruiters.length} Total</span>
         </div>
-        <div className="card bg-slate-900/50 border border-slate-800 shadow-2xl overflow-hidden">
+        <div className="card bg-base-100 border border-base-200 shadow-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="table w-full">
-              <thead className="bg-slate-800/50">
-                <tr className="text-slate-400 border-b border-slate-800">
+              <thead className="bg-base-200/50">
+                <tr className="text-base-content/60 border-b border-base-200">
                   <th className="py-4 font-semibold uppercase text-xs tracking-widest">Recruiter</th>
                   <th className="py-4 font-semibold uppercase text-xs tracking-widest">Company</th>
                   <th className="py-4 font-semibold uppercase text-xs tracking-widest text-center">Status</th>
                   <th className="py-4 font-semibold uppercase text-xs tracking-widest text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-base-200">
                 {recruiters.map(recruiter => (
-                  <tr key={`recruiter-${recruiter.id}`} className="hover:bg-white/5 transition-colors">
+                  <tr key={`recruiter-${recruiter.id}`} className="hover:bg-base-content/5 transition-colors">
                     <td className="py-4">
-                      <div className="font-bold text-slate-200">{recruiter.name}</div>
-                      <div className="text-xs text-slate-400">{recruiter.email}</div>
+                      <div className="font-bold text-base-content">{recruiter.name}</div>
+                      <div className="text-xs text-base-content/50">{recruiter.email}</div>
                     </td>
-                    <td className="py-4 text-slate-400 font-medium">{recruiter.company_name || 'Individual'}</td>
+                    <td className="py-4 text-base-content/70 font-medium">{recruiter.company_name || 'Individual'}</td>
                     <td className="py-4 text-center">
                       <div className="flex flex-col gap-1 items-center">
                         <span 
@@ -298,25 +305,25 @@ function ManageUsers() {
       {/* Students Section */}
       <section className="space-y-4">
         <div className="flex justify-between items-center px-1">
-          <h2 className="text-2xl font-bold text-slate-200">Students</h2>
+          <h2 className="text-2xl font-bold text-base-content">Students</h2>
           <span className="badge badge-primary">{students.length} Total</span>
         </div>
-        <div className="card bg-slate-900/50 border border-slate-800 shadow-2xl overflow-hidden">
+        <div className="card bg-base-100 border border-base-200 shadow-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="table w-full">
-              <thead className="bg-slate-800/50">
-                <tr className="text-slate-400 border-b border-slate-800">
+              <thead className="bg-base-200/50">
+                <tr className="text-base-content/60 border-b border-base-200">
                   <th className="py-4 font-semibold uppercase text-xs tracking-widest">Student Info</th>
                   <th className="py-4 font-semibold uppercase text-xs tracking-widest text-center">Status</th>
                   <th className="py-4 font-semibold uppercase text-xs tracking-widest text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-base-200">
                 {students.map(student => (
-                  <tr key={`student-${student.id}`} className="hover:bg-white/5 transition-colors">
+                  <tr key={`student-${student.id}`} className="hover:bg-base-content/5 transition-colors">
                     <td className="py-4">
-                      <div className="font-bold text-slate-200">{student.name}</div>
-                      <div className="text-sm text-slate-500">{student.email}</div>
+                      <div className="font-bold text-base-content">{student.name}</div>
+                      <div className="text-sm text-base-content/50">{student.email}</div>
                     </td>
                     <td className="py-4 text-center">
                        <div className="flex flex-col gap-1 items-center">
@@ -355,32 +362,32 @@ function ManageUsers() {
       {/* User Details Modal */}
       {isModalOpen && selectedUser && (
         <div className="modal modal-open">
-          <div className="modal-box bg-slate-900 border border-slate-800 max-w-2xl">
+          <div className="modal-box bg-base-100 border border-base-300 max-w-2xl">
             <div className="flex justify-between items-start mb-6">
-              <h3 className="font-bold text-2xl text-white capitalize">{selectedUser.type} Profile</h3>
+              <h3 className="font-bold text-2xl text-base-content capitalize">{selectedUser.type} Profile</h3>
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="btn btn-sm btn-circle btn-ghost text-slate-400"
+                className="btn btn-sm btn-circle btn-ghost text-base-content/50"
               >
                 ✕
               </button>
             </div>
 
             <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
-              <div className="flex items-center gap-4 p-4 bg-slate-800/50 rounded-xl">
+              <div className="flex items-center gap-4 p-4 bg-base-200 rounded-xl">
                 <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center text-primary text-2xl font-bold uppercase">
                   {(selectedUser.user.name || selectedUser.user.company_name || 'U').charAt(0)}
                 </div>
                 <div>
-                  <h4 className="text-xl font-bold text-white">{selectedUser.user.name || selectedUser.user.company_name}</h4>
-                  <p className="text-slate-400">{selectedUser.user.email}</p>
+                  <h4 className="text-xl font-bold text-base-content">{selectedUser.user.name || selectedUser.user.company_name}</h4>
+                  <p className="text-base-content/60">{selectedUser.user.email}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div className="p-4 bg-slate-800/30 rounded-lg border border-slate-700/50">
-                  <p className="text-slate-500 mb-1 font-medium">Account Details</p>
-                  <p className="text-slate-200 font-bold mb-1">Joined: {new Date(selectedUser.user.created_at).toLocaleDateString()}</p>
+                <div className="p-4 bg-base-200/50 rounded-lg border border-base-300">
+                  <p className="text-base-content/50 mb-1 font-medium">Account Details</p>
+                  <p className="text-base-content font-bold mb-1">Joined: {new Date(selectedUser.user.created_at).toLocaleDateString()}</p>
                   <div className="flex items-center gap-2">
                     {selectedUser.user.email_verified_at ? 
                       <span className="text-success text-xs font-bold flex items-center gap-1"><CheckCircle size={12}/> Email Verified</span> : 
@@ -389,8 +396,8 @@ function ManageUsers() {
                   </div>
                 </div>
 
-                <div className="p-4 bg-slate-800/30 rounded-lg border border-slate-700/50">
-                  <p className="text-slate-500 mb-1 font-medium">Admin Verification</p>
+                <div className="p-4 bg-base-200/50 rounded-lg border border-base-300">
+                  <p className="text-base-content/50 mb-1 font-medium">Admin Verification</p>
                   <div className="flex items-center gap-2">
                     {selectedUser.user.is_verified ? 
                       <span className="bg-success/20 text-success px-2 py-1 rounded text-xs font-black flex items-center gap-1">
@@ -406,21 +413,21 @@ function ManageUsers() {
 
               {selectedUser.type === 'student' && selectedUser.user.profile && (
                 <div className="space-y-4">
-                  <h5 className="font-bold text-slate-200 border-b border-slate-800 pb-2 flex items-center gap-2">
+                  <h5 className="font-bold text-base-content border-b border-base-300 pb-2 flex items-center gap-2">
                     Academic Background
                   </h5>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div className="col-span-2">
-                      <p className="text-slate-500">University</p>
-                      <p className="text-slate-200 font-medium">{selectedUser.user.profile.university}</p>
+                      <p className="text-base-content/50">University</p>
+                      <p className="text-base-content font-medium">{selectedUser.user.profile.university}</p>
                     </div>
                     <div>
-                      <p className="text-slate-500">Department</p>
-                      <p className="text-slate-200 font-medium">{selectedUser.user.profile.department}</p>
+                      <p className="text-base-content/50">Department</p>
+                      <p className="text-base-content font-medium">{selectedUser.user.profile.department}</p>
                     </div>
                     <div>
-                      <p className="text-slate-500">Graduation</p>
-                      <p className="text-slate-200 font-medium">{selectedUser.user.profile.graduation_year}</p>
+                      <p className="text-base-content/50">Graduation</p>
+                      <p className="text-base-content font-medium">{selectedUser.user.profile.graduation_year}</p>
                     </div>
                   </div>
                 </div>
@@ -428,15 +435,15 @@ function ManageUsers() {
 
               {selectedUser.type === 'recruiter' && (
                 <div className="space-y-4">
-                  <h5 className="font-bold text-slate-200 border-b border-slate-800 pb-2">Business Information</h5>
+                  <h5 className="font-bold text-base-content border-b border-base-300 pb-2">Business Information</h5>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p className="text-slate-500">Representing</p>
-                      <p className="text-slate-200 font-bold">{selectedUser.user.company_name}</p>
+                      <p className="text-base-content/50">Representing</p>
+                      <p className="text-base-content font-bold">{selectedUser.user.company_name}</p>
                     </div>
                     <div>
-                      <p className="text-slate-500">Current Position</p>
-                      <p className="text-slate-200 font-medium">{selectedUser.user.position || 'Not specified'}</p>
+                      <p className="text-base-content/50">Current Position</p>
+                      <p className="text-base-content font-medium">{selectedUser.user.position || 'Not specified'}</p>
                     </div>
                   </div>
                 </div>
@@ -444,16 +451,16 @@ function ManageUsers() {
 
               {selectedUser.user.internships && selectedUser.user.internships.length > 0 && (
                 <div className="space-y-4">
-                  <h5 className="font-bold text-slate-200 border-b border-slate-800 pb-2 flex justify-between">
+                  <h5 className="font-bold text-base-content border-b border-base-300 pb-2 flex justify-between">
                     <span>Active Postings</span>
-                    <span className="text-xs text-slate-400">{selectedUser.user.internships.length} Posts</span>
+                    <span className="text-xs text-base-content/50">{selectedUser.user.internships.length} Posts</span>
                   </h5>
                   <div className="space-y-2">
                     {selectedUser.user.internships.map(i => (
-                      <div key={i.id} className="p-3 bg-slate-800/50 rounded-lg border border-slate-700/30 flex justify-between items-center text-xs">
+                      <div key={i.id} className="p-3 bg-base-200/50 rounded-lg border border-base-300 flex justify-between items-center text-xs">
                         <div>
-                          <p className="text-slate-200 font-bold">{i.title}</p>
-                          <p className="text-slate-500 mt-0.5">{new Date(i.created_at).toLocaleDateString()}</p>
+                          <p className="text-base-content font-bold">{i.title}</p>
+                          <p className="text-base-content/50 mt-0.5">{new Date(i.created_at).toLocaleDateString()}</p>
                         </div>
                         <span className={`badge badge-sm font-bold ${i.status === 'active' ? 'badge-success' : 'badge-ghost'}`}>{i.status}</span>
                       </div>

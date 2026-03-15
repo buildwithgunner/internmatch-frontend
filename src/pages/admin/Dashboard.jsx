@@ -116,11 +116,11 @@ function AdminDashboard() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8 bg-[#f8fafc]" ref={dashboardRef}>
+    <div className="max-w-7xl mx-auto p-6 space-y-8" ref={dashboardRef}>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">Admin Dashboard</h1>
-          <p className="text-slate-500 mt-2 font-medium uppercase text-[10px] tracking-widest">Platform overview and management tools</p>
+          <h1 className="text-4xl font-extrabold tracking-tight text-base-content">Admin Dashboard</h1>
+          <p className="text-base-content/60 mt-2 font-medium uppercase text-[10px] tracking-widest">Platform overview and management tools</p>
         </div>
 
         <button
@@ -139,14 +139,14 @@ function AdminDashboard() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {statCards.map((stat, i) => (
-          <div key={i} className="card bg-white shadow-sm border border-slate-100 rounded-[2rem]">
+          <div key={i} className="card bg-base-100 shadow-sm border border-base-200 rounded-[2rem]">
             <div className="card-body p-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.title}</p>
-                  <p className="text-3xl font-black mt-2 text-slate-900">{stat.value.toLocaleString()}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-base-content/50">{stat.title}</p>
+                  <p className="text-3xl font-black mt-2 text-base-content">{stat.value.toLocaleString()}</p>
                 </div>
-                <div className={`p-4 rounded-2xl bg-slate-50 ${stat.color}`}>
+                <div className={`p-4 rounded-2xl bg-base-200 ${stat.color}`}>
                   <stat.icon size={32} />
                 </div>
               </div>
@@ -156,27 +156,27 @@ function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Link to="/admin/manage-users" className="card bg-white hover:shadow-xl transition-shadow border border-slate-100 rounded-[2rem]">
+        <Link to="/admin/manage-users" className="card bg-base-100 hover:shadow-xl transition-shadow border border-base-200 rounded-[2rem]">
           <div className="card-body items-center text-center py-10">
             <Users size={48} className="text-primary mb-4" />
-            <h3 className="text-xl font-bold text-slate-900 tracking-tight">Manage Users</h3>
-            <p className="text-slate-500 text-sm mt-2">View, verify, or suspend accounts</p>
+            <h3 className="text-xl font-bold text-base-content tracking-tight">Manage Users</h3>
+            <p className="text-base-content/60 text-sm mt-2">View, verify, or suspend accounts</p>
           </div>
         </Link>
 
-        <Link to="/admin/manage-postings" className="card bg-white hover:shadow-xl transition-shadow border border-slate-100 rounded-[2rem]">
+        <Link to="/admin/manage-postings" className="card bg-base-100 hover:shadow-xl transition-shadow border border-base-200 rounded-[2rem]">
           <div className="card-body items-center text-center py-10">
             <Briefcase size={48} className="text-secondary mb-4" />
-            <h3 className="text-xl font-bold text-slate-900 tracking-tight">Manage Postings</h3>
-            <p className="text-slate-500 text-sm mt-2">Review and moderate internship listings</p>
+            <h3 className="text-xl font-bold text-base-content tracking-tight">Manage Postings</h3>
+            <p className="text-base-content/60 text-sm mt-2">Review and moderate internship listings</p>
           </div>
         </Link>
 
-        <Link to="/admin/reports" className="card bg-white hover:shadow-xl transition-shadow border border-slate-100 rounded-[2rem]">
+        <Link to="/admin/reports" className="card bg-base-100 hover:shadow-xl transition-shadow border border-base-200 rounded-[2rem]">
           <div className="card-body items-center text-center py-10">
             <FileText size={48} className="text-accent mb-4" />
-            <h3 className="text-xl font-bold text-slate-900 tracking-tight">Reports</h3>
-            <p className="text-slate-500 text-sm mt-2">Analytics and platform insights</p>
+            <h3 className="text-xl font-bold text-base-content tracking-tight">Reports</h3>
+            <p className="text-base-content/60 text-sm mt-2">Analytics and platform insights</p>
           </div>
         </Link>
       </div>
