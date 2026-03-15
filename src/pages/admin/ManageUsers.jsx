@@ -89,6 +89,10 @@ function ManageUsers() {
           color: '#fff'
         });
         fetchUsers();
+        // If modal is open, we need to refresh selectedUser data
+        if (isModalOpen && selectedUser?.user.id === id) {
+             handleViewUser(type, id);
+        }
       } catch (err) {
         Swal.fire('Error', 'Failed to update verification status', 'error');
       }
@@ -119,6 +123,7 @@ function ManageUsers() {
           color: '#fff'
         });
         fetchUsers();
+        if (isModalOpen) setIsModalOpen(false);
       } catch (err) {
         Swal.fire('Error', 'Failed to delete user', 'error');
       }
@@ -314,15 +319,22 @@ function ManageUsers() {
                       <div className="text-sm text-slate-500">{student.email}</div>
                     </td>
                     <td className="py-4 text-center">
-                      {student.is_banned ? (
-                        <span className="badge badge-error badge-sm">Suspended</span>
-                      ) : (
-                        <span className="badge badge-success badge-sm">Active</span>
-                      )}
+                       <div className="flex flex-col gap-1 items-center">
+                        <span 
+                          onClick={() => handleToggleVerify('student', student.id, student.is_verified)}
+                          className={`badge ${student.is_verified ? 'badge-success' : 'badge-warning'} badge-sm cursor-pointer`}
+                        >
+                          {student.is_verified ? 'Verified' : 'Pending'}
+                        </span>
+                        {student.is_banned && <span className="badge badge-error badge-sm">Suspended</span>}
+                      </div>
                     </td>
                     <td className="py-4 text-right">
                       <div className="flex justify-end gap-2">
                         <button onClick={() => handleViewUser('student', student.id)} className="btn btn-square btn-ghost btn-sm text-primary" title="View Profile"><Eye size={18} /></button>
+                        <button onClick={() => handleToggleVerify('student', student.id, student.is_verified)} className={`btn btn-square btn-ghost btn-sm ${student.is_verified ? 'text-success' : 'text-slate-500'}`} title="Verify Student">
+                          <ShieldCheck size={18} />
+                        </button>
                         <button onClick={() => handleToggleBan('student', student.id, student.is_banned)} className={`btn btn-square btn-ghost btn-sm ${student.is_banned ? 'text-success' : 'text-warning'}`} title="Suspend / Activate">
                           {student.is_banned ? <CheckCircle size={18} /> : <ShieldAlert size={18} />}
                         </button>
@@ -340,7 +352,7 @@ function ManageUsers() {
         </div>
       </section>
 
-      {/* User Details Modal - Kept for accessibility, though Swal can handle some views */}
+      {/* User Details Modal */}
       {isModalOpen && selectedUser && (
         <div className="modal modal-open">
           <div className="modal-box bg-slate-900 border border-slate-800 max-w-2xl">
@@ -367,15 +379,26 @@ function ManageUsers() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div className="p-4 bg-slate-800/30 rounded-lg border border-slate-700/50">
-                  <p className="text-slate-500 mb-1 font-medium">Account Created</p>
-                  <p className="text-slate-200 font-bold">{new Date(selectedUser.user.created_at).toLocaleString()}</p>
-                </div>
-                <div className="p-4 bg-slate-800/30 rounded-lg border border-slate-700/50">
-                  <p className="text-slate-500 mb-1 font-medium">Identity Verification</p>
+                  <p className="text-slate-500 mb-1 font-medium">Account Details</p>
+                  <p className="text-slate-200 font-bold mb-1">Joined: {new Date(selectedUser.user.created_at).toLocaleDateString()}</p>
                   <div className="flex items-center gap-2">
                     {selectedUser.user.email_verified_at ? 
-                      <span className="text-success font-bold flex items-center gap-1"><CheckCircle size={14}/> Verified Email</span> : 
-                      <span className="text-warning font-bold flex items-center gap-1"><XCircle size={14}/> Unverified Email</span>
+                      <span className="text-success text-xs font-bold flex items-center gap-1"><CheckCircle size={12}/> Email Verified</span> : 
+                      <span className="text-warning text-xs font-bold flex items-center gap-1"><XCircle size={12}/> Email Unverified</span>
+                    }
+                  </div>
+                </div>
+
+                <div className="p-4 bg-slate-800/30 rounded-lg border border-slate-700/50">
+                  <p className="text-slate-500 mb-1 font-medium">Admin Verification</p>
+                  <div className="flex items-center gap-2">
+                    {selectedUser.user.is_verified ? 
+                      <span className="bg-success/20 text-success px-2 py-1 rounded text-xs font-black flex items-center gap-1">
+                        <ShieldCheck size={14}/> IDENTITY VERIFIED
+                      </span> : 
+                      <span className="bg-warning/20 text-warning px-2 py-1 rounded text-xs font-black flex items-center gap-1">
+                        <ShieldAlert size={14}/> PENDING REVIEW
+                      </span>
                     }
                   </div>
                 </div>
@@ -445,16 +468,14 @@ function ManageUsers() {
                 onClick={() => handleToggleBan(selectedUser.type, selectedUser.user.id, selectedUser.user.is_banned)}
                 className={`btn ${selectedUser.user.is_banned ? 'btn-success' : 'btn-warning'} btn-outline flex-1`}
               >
-                {selectedUser.user.is_banned ? 'Activate' : 'Suspend'}
+                {selectedUser.user.is_banned ? 'Activate Account' : 'Suspend Account'}
               </button>
-              {(selectedUser.type === 'company' || selectedUser.type === 'recruiter') && (
-                <button 
-                  onClick={() => handleToggleVerify(selectedUser.type, selectedUser.user.id, selectedUser.user.is_verified)}
-                  className={`btn ${selectedUser.user.is_verified ? 'btn-ghost' : 'btn-info'} flex-1`}
-                >
-                  {selectedUser.user.is_verified ? 'Unverify' : 'Verify Identity'}
-                </button>
-              )}
+              <button 
+                onClick={() => handleToggleVerify(selectedUser.type, selectedUser.user.id, selectedUser.user.is_verified)}
+                className={`btn ${selectedUser.user.is_verified ? 'btn-ghost' : 'btn-info'} flex-1`}
+              >
+                {selectedUser.user.is_verified ? 'Revoke Verification' : 'Verify Identity'}
+              </button>
             </div>
           </div>
         </div>
