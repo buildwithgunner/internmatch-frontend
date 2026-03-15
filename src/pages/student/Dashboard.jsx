@@ -30,13 +30,22 @@ function Dashboard() {
 
   useEffect(() => {
     setLoading(true);
-    api.get('/internships')
+    api.get('/student/recommendations')
       .then(res => {
         const data = res.data.internships || [];
         setInternships(data);
         setFilteredInternships(data);
       })
-      .catch(err => console.error('Failed to load internships:', err))
+      .catch(err => {
+        console.error('Failed to load recommended internships, falling back to all:', err);
+        api.get('/internships')
+          .then(res => {
+            const data = res.data.internships || [];
+            setInternships(data);
+            setFilteredInternships(data);
+          })
+          .catch(e => console.error('Final fallback failed:', e));
+      })
       .finally(() => setLoading(false));
   }, []);
 

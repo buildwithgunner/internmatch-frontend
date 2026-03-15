@@ -7,8 +7,8 @@ import Button from "../../components/ui/Button.jsx";
 function Login({ restrictedRole }) {
   const [searchParams] = useSearchParams();
   const location = useLocation();
-  const role = restrictedRole || searchParams.get('role') || location.state?.role || 'student';
-
+  const initialRole = restrictedRole || searchParams.get('role') || location.state?.role || 'student';
+  const [role, setRole] = useState(initialRole);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -23,11 +23,13 @@ function Login({ restrictedRole }) {
     setLoading(true);
     setError('');
     try {
-      await login(email, password, role);
+      const data = await login(email, password, role);
+      const userRole = data.role;
       const from = location.state?.from?.pathname ||
-        (role === 'admin' ? '/admin/dashboard' :
-          role === 'company' ? '/company/dashboard' :
-            '/student/dashboard');
+        (userRole === 'admin' ? '/admin/dashboard' :
+          userRole === 'recruiter' ? '/recruiter/dashboard' :
+            userRole === 'company' ? '/company/dashboard' :
+              '/student/dashboard');
       navigate(from, { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid credentials');
@@ -63,6 +65,7 @@ function Login({ restrictedRole }) {
             <h2 className="text-4xl font-black tracking-tighter text-slate-900 italic leading-none">
               Welcome<span className="text-orange-500">.</span>
             </h2>
+
             <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] mt-3">
               Secure access for <span className="text-orange-600 underline decoration-orange-200 underline-offset-4">{roleText}s</span>
             </p>

@@ -1,11 +1,12 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { 
+import {
   HomeIcon,
   DocumentTextIcon,
   UsersIcon,
   ChartBarIcon,
   Bars3Icon,
   XMarkIcon,
+  ShieldCheckIcon
 } from '@heroicons/react/24/outline';
 
 function AdminLayout() {
@@ -61,6 +62,12 @@ function AdminLayout() {
               <NavLink to="manage-users" end className="flex items-center gap-3 text-lg rounded-lg">
                 <UsersIcon className="h-6 w-6" />
                 Manage Users
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="moderation" end className="flex items-center gap-3 text-lg rounded-lg">
+                <ShieldCheckIcon className="h-6 w-6" />
+                Moderation Panel
               </NavLink>
             </li>
             <li>

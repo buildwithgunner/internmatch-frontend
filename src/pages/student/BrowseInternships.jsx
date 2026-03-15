@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
-import { 
-  Search, MapPin, Globe, 
-  DollarSign, Zap, LayoutGrid, 
-  ArrowRight, SearchCode, X 
+import {
+  Search, MapPin, Globe,
+  DollarSign, Zap, LayoutGrid,
+  ArrowRight, SearchCode, X
 } from 'lucide-react';
 import api from '../../services/api.js';
 import InternshipCard from "../../components/cards/InternshipsCard.jsx";
@@ -14,6 +14,7 @@ function BrowseInternships() {
     type: 'All',
     paid: false,
     location: '',
+    category: 'All',
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -36,15 +37,16 @@ function BrowseInternships() {
   const filteredInternships = useMemo(() => {
     return internships.filter(intern => {
       const q = searchQuery.toLowerCase();
-      const matchesSearch = 
+      const matchesSearch =
         intern.title?.toLowerCase().includes(q) ||
         intern.company?.company_name?.toLowerCase().includes(q);
       const matchesType = filters.type === 'All' || intern.type?.toLowerCase() === filters.type.toLowerCase();
+      const matchesCategory = filters.category === 'All' || intern.category === filters.category;
       const matchesPaid = !filters.paid || intern.paid;
-      const matchesLocation = !filters.location || 
+      const matchesLocation = !filters.location ||
         intern.location?.toLowerCase().includes(filters.location.toLowerCase());
 
-      return matchesSearch && matchesType && matchesPaid && matchesLocation;
+      return matchesSearch && matchesType && matchesCategory && matchesPaid && matchesLocation;
     });
   }, [searchQuery, filters, internships]);
 
@@ -110,6 +112,24 @@ function BrowseInternships() {
           </div>
 
           <div className="relative flex-1 md:max-w-xs">
+            <LayoutGrid className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
+            <select
+              className="w-full pl-14 pr-8 py-4 bg-transparent rounded-2xl border border-slate-300/50 dark:border-slate-600/50 focus:border-orange-500 dark:focus:border-orange-400 outline-none text-slate-900 dark:text-slate-100 appearance-none transition-all cursor-pointer"
+              value={filters.category}
+              onChange={e => setFilters({ ...filters, category: e.target.value })}
+            >
+              <option value="All" className="dark:bg-slate-900">All Categories</option>
+              <option value="Software Engineering" className="dark:bg-slate-900">Software Engineering</option>
+              <option value="Data Science" className="dark:bg-slate-900">Data Science</option>
+              <option value="Design" className="dark:bg-slate-900">Design</option>
+              <option value="Marketing" className="dark:bg-slate-900">Marketing</option>
+              <option value="Business / Finance" className="dark:bg-slate-900">Business / Finance</option>
+              <option value="Content / Media" className="dark:bg-slate-900">Content / Media</option>
+              <option value="Other" className="dark:bg-slate-900">Other</option>
+            </select>
+          </div>
+
+          <div className="relative flex-1 md:max-w-xs">
             <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
             <input
               placeholder="Location or Remote..."
@@ -120,22 +140,20 @@ function BrowseInternships() {
           </div>
 
           <div className="flex flex-wrap gap-3 items-center">
-            <div className={`px-6 py-3 rounded-2xl backdrop-blur-xl border text-sm font-semibold cursor-pointer transition-all ${
-              filters.type === 'All' 
-                ? 'bg-orange-600 text-white border-orange-600 dark:bg-orange-700 dark:border-orange-700' 
+            <div className={`px-6 py-3 rounded-2xl backdrop-blur-xl border text-sm font-semibold cursor-pointer transition-all ${filters.type === 'All'
+                ? 'bg-orange-600 text-white border-orange-600 dark:bg-orange-700 dark:border-orange-700'
                 : 'bg-white/40 dark:bg-slate-800/40 border-slate-300/50 dark:border-slate-600/50 hover:border-orange-400/50 dark:hover:border-orange-500/50 text-slate-700 dark:text-slate-300'
-            }`} onClick={() => setFilters({ ...filters, type: 'All' })}>
+              }`} onClick={() => setFilters({ ...filters, type: 'All' })}>
               All Types
             </div>
 
             {['Remote', 'Onsite', 'Hybrid'].map(t => (
-              <div 
+              <div
                 key={t}
-                className={`px-6 py-3 rounded-2xl backdrop-blur-xl border text-sm font-semibold cursor-pointer transition-all ${
-                  filters.type === t 
-                    ? 'bg-orange-600 text-white border-orange-600 dark:bg-orange-700 dark:border-orange-700' 
+                className={`px-6 py-3 rounded-2xl backdrop-blur-xl border text-sm font-semibold cursor-pointer transition-all ${filters.type === t
+                    ? 'bg-orange-600 text-white border-orange-600 dark:bg-orange-700 dark:border-orange-700'
                     : 'bg-white/40 dark:bg-slate-800/40 border-slate-300/50 dark:border-slate-600/50 hover:border-orange-400/50 dark:hover:border-orange-500/50 text-slate-700 dark:text-slate-300'
-                }`} onClick={() => setFilters({ ...filters, type: t })}
+                  }`} onClick={() => setFilters({ ...filters, type: t })}
               >
                 {t}
               </div>
@@ -143,11 +161,10 @@ function BrowseInternships() {
 
             <button
               onClick={() => setFilters({ ...filters, paid: !filters.paid })}
-              className={`px-6 py-3 rounded-2xl text-sm font-semibold transition-all backdrop-blur-xl border ${
-                filters.paid 
-                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-600/20 dark:bg-emerald-700 dark:border-emerald-700' 
+              className={`px-6 py-3 rounded-2xl text-sm font-semibold transition-all backdrop-blur-xl border ${filters.paid
+                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-600/20 dark:bg-emerald-700 dark:border-emerald-700'
                   : 'bg-white/40 dark:bg-slate-800/40 border-slate-300/50 dark:border-slate-600/50 hover:border-emerald-400/50 dark:hover:border-emerald-500/50 text-slate-700 dark:text-slate-300'
-              }`}
+                }`}
             >
               <DollarSign size={16} className="inline mr-1" />
               {filters.paid ? 'Paid Only' : 'All Roles'}
@@ -175,8 +192,8 @@ function BrowseInternships() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredInternships.map((intern) => (
-              <div 
-                key={intern.id} 
+              <div
+                key={intern.id}
                 className="group bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/40 rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
               >
                 {intern.paid && (

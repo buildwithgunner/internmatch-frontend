@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
-import { 
-  Briefcase, Building2, Calendar, XCircle, 
-  ExternalLink, Clock, CheckCircle2, AlertCircle, 
+import {
+  Briefcase, Building2, Calendar, XCircle,
+  ExternalLink, Clock, CheckCircle2, AlertCircle,
   Inbox, MapPin, DollarSign, ArrowRight, Search,
   ShieldCheck, Zap, MoreHorizontal, Filter, X
 } from 'lucide-react';
@@ -35,12 +35,12 @@ function Applications() {
   const filteredApplications = useMemo(() => {
     return applications.filter(app => {
       const q = searchQuery.toLowerCase();
-      const matchesSearch = 
+      const matchesSearch =
         app.internship?.title?.toLowerCase().includes(q) ||
         app.internship?.company?.company_name?.toLowerCase().includes(q);
-      
+
       const matchesStatus = statusFilter === 'all' || app.status?.toLowerCase() === statusFilter.toLowerCase();
-      
+
       return matchesSearch && matchesStatus;
     });
   }, [applications, searchQuery, statusFilter]);
@@ -87,7 +87,7 @@ function Applications() {
       html: `
         <div class="text-left p-10 pb-6 dark:text-slate-100">
           <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-2">${internship.title}</h2>
-          <p class="text-orange-600 dark:text-orange-400 font-bold text-xl mb-8">${internship.company?.company_name || 'Partner'}</p>
+          <p class="text-orange-600 dark:text-orange-400 font-bold text-xl mb-8">${internship.recruiter?.name ? internship.recruiter.name + (internship.recruiter.company_name ? ' • ' + internship.recruiter.company_name : '') : (internship.company?.company_name || 'Independent Recruiter')}</p>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
             <div class="p-5 bg-white/50 dark:bg-slate-800/40 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/40">
               <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Location</p>
@@ -145,13 +145,12 @@ function Applications() {
 
           <div className="grid grid-cols-3 gap-4 sm:gap-6">
             {stats.map((stat, i) => (
-              <div 
-                key={i} 
-                className={`p-6 rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1 hover:shadow-xl duration-300 ${
-                  i === 0 
-                    ? 'bg-orange-600/10 dark:bg-orange-800/20 border-orange-500/30 dark:border-orange-600/30 text-orange-800 dark:text-orange-200' 
+              <div
+                key={i}
+                className={`p-6 rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1 hover:shadow-xl duration-300 ${i === 0
+                    ? 'bg-orange-600/10 dark:bg-orange-800/20 border-orange-500/30 dark:border-orange-600/30 text-orange-800 dark:text-orange-200'
                     : 'bg-white/40 dark:bg-slate-800/40 border-slate-200/50 dark:border-slate-700/40 text-slate-900 dark:text-slate-100'
-                }`}
+                  }`}
               >
                 <div className={`flex items-center gap-3 mb-3 ${stat.color}`}>
                   {stat.icon}
@@ -185,11 +184,10 @@ function Applications() {
               <button
                 key={s}
                 onClick={() => setStatusFilter(s)}
-                className={`px-6 py-3 rounded-2xl text-sm font-semibold transition-all backdrop-blur-xl border ${
-                  statusFilter === s
+                className={`px-6 py-3 rounded-2xl text-sm font-semibold transition-all backdrop-blur-xl border ${statusFilter === s
                     ? 'bg-orange-600 text-white border-orange-600 shadow-lg shadow-orange-600/20 dark:bg-orange-700 dark:border-orange-700 dark:shadow-orange-700/20'
                     : 'bg-white/40 dark:bg-slate-800/40 border-slate-300/50 dark:border-slate-600/50 hover:border-orange-400/50 dark:hover:border-orange-500/50 text-slate-700 dark:text-slate-300'
-                }`}
+                  }`}
               >
                 {s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
@@ -214,8 +212,8 @@ function Applications() {
                 <h3 className="text-2xl font-bold text-slate-600 dark:text-slate-300">No applications found</h3>
                 <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto">Adjust filters or explore new opportunities.</p>
               </div>
-              <Button 
-                onClick={() => navigate('/student/browse')} 
+              <Button
+                onClick={() => navigate('/student/browse')}
                 className="px-8 py-4 bg-orange-600 hover:bg-orange-700 text-white rounded-2xl font-semibold shadow-lg shadow-orange-600/20 transition-all"
               >
                 Browse Opportunities
@@ -225,7 +223,7 @@ function Applications() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {filteredApplications.map(app => (
-              <div 
+              <div
                 key={app.id}
                 className="group bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/40 rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
               >
@@ -240,7 +238,7 @@ function Applications() {
                           {app.internship?.title || 'Role'}
                         </h3>
                         <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mt-1">
-                          <span>{app.internship?.company?.company_name || 'N/A'}</span>
+                          <span>{app.internship?.recruiter?.name ? app.internship.recruiter.name + (app.internship.recruiter.company_name ? ' • ' + app.internship.recruiter.company_name : '') : (app.internship?.company?.company_name || 'Independent')}</span>
                           <span>•</span>
                           <span>{app.internship?.location || 'Remote'}</span>
                         </div>

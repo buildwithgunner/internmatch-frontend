@@ -9,6 +9,8 @@ import {
   Bars3Icon,
   XMarkIcon,
   ArrowLeftOnRectangleIcon,
+  BookmarkIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/outline";
 import { useAuth } from "../../context/AuthContext.jsx";
 
@@ -39,8 +41,10 @@ function StudentLayout() {
   const navItems = [
     { to: "dashboard", icon: HomeIcon, label: "Overview" },
     { to: "browse", icon: BriefcaseIcon, label: "Explore" },
+    { to: "saved", icon: BookmarkIcon, label: "Saved" },
     { to: "applications", icon: DocumentTextIcon, label: "Applied" },
     { to: "interviews", icon: ChatBubbleLeftRightIcon, label: "Interviews" },
+    { to: "ambassador", icon: SparklesIcon, label: "Ambassador" },
     { to: "/student/profile", icon: UserIcon, label: "Profile" },
   ];
 
@@ -72,10 +76,9 @@ function StudentLayout() {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex items-center h-12 rounded-xl transition-all duration-200 overflow-hidden ${
-                  isActive
-                    ? "bg-orange-600 text-white dark:bg-orange-700"
-                    : "text-slate-400 dark:text-slate-500 hover:bg-white/5 dark:hover:bg-slate-800/50 hover:text-white dark:hover:text-slate-200"
+                `flex items-center h-12 rounded-xl transition-all duration-200 overflow-hidden ${isActive
+                  ? "bg-orange-600 text-white dark:bg-orange-700"
+                  : "text-slate-400 dark:text-slate-500 hover:bg-white/5 dark:hover:bg-slate-800/50 hover:text-white dark:hover:text-slate-200"
                 }`
               }
             >
@@ -128,7 +131,7 @@ function StudentLayout() {
             className="absolute inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm"
             onClick={() => setIsMobileOpen(false)}
           />
-          <div className="absolute left-0 top-0 bottom-0 w-72 bg-slate-950 dark:bg-slate-950 p-6 shadow-2xl animate-in slide-in-from-left duration-300">
+          <div className="absolute left-0 top-0 bottom-0 w-72 bg-slate-950 dark:bg-slate-950 p-6 shadow-2xl animate-in slide-in-from-left duration-300 flex flex-col">
             <div className="flex justify-between items-center mb-10">
               <span className="font-black italic text-2xl text-white">
                 Intern<span className="text-orange-500 dark:text-orange-400">match.</span>
@@ -145,10 +148,9 @@ function StudentLayout() {
                   to={item.to}
                   onClick={() => setIsMobileOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-4 p-4 rounded-xl font-bold transition-all ${
-                      isActive
-                        ? "bg-orange-600 text-white dark:bg-orange-700"
-                        : "text-slate-300 dark:text-slate-400 hover:bg-white/5 dark:hover:bg-slate-800/50"
+                    `flex items-center gap-4 p-4 rounded-xl font-bold transition-all ${isActive
+                      ? "bg-orange-600 text-white dark:bg-orange-700"
+                      : "text-slate-300 dark:text-slate-400 hover:bg-white/5 dark:hover:bg-slate-800/50"
                     }`
                   }
                 >
@@ -157,6 +159,16 @@ function StudentLayout() {
                 </NavLink>
               ))}
             </nav>
+
+            <div className="mt-auto pt-6 border-t border-white/10 dark:border-slate-800/60">
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-4 w-full p-4 rounded-xl font-bold text-slate-300 dark:text-slate-400 hover:bg-red-500/10 dark:hover:bg-red-900/20 hover:text-red-500 dark:hover:text-red-400 transition-all"
+              >
+                <ArrowLeftOnRectangleIcon className="h-6 w-6" />
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       )}

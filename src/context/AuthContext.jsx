@@ -6,7 +6,7 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [role, setRole] = useState(null); 
+  const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -40,23 +40,24 @@ export function AuthProvider({ children }) {
     return res.data;
   };
 
-  const register = async (name, email, password, selectedRole, adminKey = null) => {
+  const register = async (name, email, password, selectedRole, adminKey = null, extraData = {}) => {
     const res = await api.post('/register', {
       name,
       email,
       password,
       password_confirmation: password,
       role: selectedRole,
-      admin_key: adminKey
+      admin_key: adminKey,
+      ...extraData
     });
-    
+
     // Don't store token or set user if verification is needed
     if (!res.data.needs_verification) {
       localStorage.setItem('token', res.data.token);
       setUser(res.data.user);
       setRole(res.data.role);
     }
-    
+
     return res.data;
   };
 
@@ -82,12 +83,12 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      role, 
-      loading, 
-      login, 
-      register, 
+    <AuthContext.Provider value={{
+      user,
+      role,
+      loading,
+      login,
+      register,
       verifyOtp,
       logout,
       refreshUser

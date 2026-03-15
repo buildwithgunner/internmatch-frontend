@@ -50,7 +50,7 @@ function ManagePostings() {
                 {internships.map(internship => (
                   <tr key={internship.id}>
                     <td className="font-bold">{internship.title}</td>
-                    <td>{internship.company?.company_name || 'N/A'}</td>
+                    <td>{internship.recruiter?.company?.company_name || 'Individual'}</td>
                     <td>
                       <span className={`badge ${internship.status === 'active' ? 'badge-success' : 'badge-ghost'}`}>
                         {internship.status}

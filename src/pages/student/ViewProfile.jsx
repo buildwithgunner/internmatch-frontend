@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import {
   User, Mail, Phone, Linkedin, FileText,
   ExternalLink, Edit, AlertCircle, Sparkles,
-  ShieldCheck, Zap
+  ShieldCheck, Zap, GraduationCap, MapPin,
+  Target, Clock, Globe, Github, Briefcase
 } from 'lucide-react';
 import api from '../../services/api.js';
 
@@ -106,15 +107,20 @@ function ViewProfile() {
                 <Phone size={18} /> {profile.phone}
               </div>
             )}
-            {profile.linkedin && (
+            {profile.profile?.linkedin_url && (
               <a
-                href={profile.linkedin}
+                href={profile.profile.linkedin_url.startsWith('http') ? profile.profile.linkedin_url : `https://${profile.profile.linkedin_url}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 bg-[#0a66c2]/80 backdrop-blur-xl px-6 py-3 rounded-2xl text-white border border-white/20 hover:bg-[#0a66c2] transition-all"
               >
                 <Linkedin size={18} /> LinkedIn
               </a>
+            )}
+            {profile.profile_strength && (
+              <div className="flex items-center gap-3 bg-white/20 backdrop-blur-xl px-6 py-3 rounded-2xl text-white border border-white/20">
+                <Zap size={18} className="text-yellow-300" /> Strength: {profile.profile_strength.percentage}%
+              </div>
             )}
           </div>
         </div>
@@ -124,15 +130,52 @@ function ViewProfile() {
       <div className="max-w-7xl mx-auto px-5 md:px-8 -mt-20 relative z-10 space-y-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
 
-          {/* Left - Bio & Skills */}
+          {/* Left - Bio & Details */}
           <div className="lg:col-span-2 space-y-8">
             <div className="bg-white/50 dark:bg-slate-900/40 backdrop-blur-2xl border border-slate-200/50 dark:border-slate-700/40 rounded-3xl p-8 md:p-10 shadow-xl">
               <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3">
                 <User className="text-orange-600 dark:text-orange-500" size={28} /> About Me
               </h2>
-              <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-lg whitespace-pre-wrap">
-                {profile.bio || "Your story goes here — what drives you, your experience, and your career aspirations."}
+              <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-lg whitespace-pre-wrap mb-8">
+                {profile.profile?.bio || "Your story goes here — what drives you, your experience, and your career aspirations."}
               </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-100 dark:border-slate-800">
+                <div className="space-y-4">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-400">Academic Background</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
+                      <GraduationCap size={20} className="text-orange-600" />
+                      <div>
+                        <p className="font-bold">{profile.profile?.university || 'University not set'}</p>
+                        <p className="text-sm text-slate-500">{profile.profile?.faculty} • {profile.profile?.department}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
+                      <Zap size={20} className="text-orange-600" />
+                      <p className="font-bold">{profile.profile?.level} Level • Class of {profile.profile?.graduation_year}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-400">Internship Preferences</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
+                      <Target size={20} className="text-rose-600" />
+                      <p className="font-bold">{profile.profile?.preferred_role || 'No preferred role set'}</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-bold">
+                        <Globe size={14} /> {profile.profile?.internship_type}
+                      </div>
+                      <div className="flex items-center gap-2 px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-lg text-xs font-bold">
+                        <Clock size={14} /> {profile.profile?.availability}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {skills.length > 0 && (
@@ -154,8 +197,39 @@ function ViewProfile() {
             )}
           </div>
 
-          {/* Right - Documents */}
+          {/* Right - Location & Links & Documents */}
           <div className="space-y-8">
+            {/* Location & Links */}
+            <div className="bg-white/50 dark:bg-slate-900/40 backdrop-blur-2xl border border-slate-200/50 dark:border-slate-700/40 rounded-3xl p-8 shadow-xl">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-4 bg-orange-600/10 dark:bg-orange-700/20 rounded-2xl">
+                  <MapPin size={28} className="text-orange-600 dark:text-orange-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">Reach & Connect</h3>
+                  <p className="text-sm text-slate-500">{profile.profile?.city}, {profile.profile?.state}, {profile.profile?.country}</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {profile.profile?.github_url && (
+                  <a href={profile.profile.github_url.startsWith('http') ? profile.profile.github_url : `https://${profile.profile.github_url}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-4 bg-slate-900 text-white rounded-2xl hover:scale-[1.02] transition-all font-bold">
+                    <Github size={20} /> GitHub Portfolio
+                  </a>
+                )}
+                {profile.profile?.portfolio_url && (
+                  <a href={profile.profile.portfolio_url.startsWith('http') ? profile.profile.portfolio_url : `https://${profile.profile.portfolio_url}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-4 bg-rose-600 text-white rounded-2xl hover:scale-[1.02] transition-all font-bold">
+                    <Briefcase size={20} /> Design Portfolio
+                  </a>
+                )}
+                {profile.profile?.website_url && (
+                  <a href={profile.profile.website_url.startsWith('http') ? profile.profile.website_url : `https://${profile.profile.website_url}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-4 bg-orange-600 text-white rounded-2xl hover:scale-[1.02] transition-all font-bold">
+                    <Globe size={20} /> Personal Website
+                  </a>
+                )}
+              </div>
+            </div>
+
             <div className="bg-white/50 dark:bg-slate-900/40 backdrop-blur-2xl border border-slate-200/50 dark:border-slate-700/40 rounded-3xl p-8 shadow-xl">
               <div className="flex items-center gap-4 mb-6">
                 <div className="p-4 bg-orange-600/10 dark:bg-orange-700/20 rounded-2xl">

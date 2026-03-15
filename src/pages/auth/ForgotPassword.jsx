@@ -85,6 +85,7 @@ function ForgotPassword() {
                 onChange={(e) => setRole(e.target.value)}
               >
                 <option value="student">Student Account</option>
+                <option value="recruiter">Recruiter Account</option>
                 <option value="company">Company Account</option>
               </select>
             </div>

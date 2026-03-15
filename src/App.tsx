@@ -1,3 +1,4 @@
+import React, { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 // Public Auth Pages
@@ -21,10 +22,12 @@ import MyApplications from "./pages/student/MyApplications.jsx";
 import StudentInterviews from "./pages/student/Interviews.jsx";
 import ViewProfile from "./pages/student/ViewProfile.jsx";
 import EditProfile from "./pages/student/EditProfile.jsx";
+const SavedInternships = lazy(() => import('./pages/student/SavedInternships'));
+const CampusAmbassador = lazy(() => import('./pages/student/CampusAmbassador'));
 
 // Company Pages
 import CompanyLayout from "./pages/company/CompanyLayout.jsx";
-import CompanyDashboard from "./pages/company/Dashboard.jsx";
+const CompanyDashboard = lazy(() => import('./pages/company/Dashboard')); // Changed to lazy import
 import PostInternship from "./pages/company/PostInternship.jsx";
 import CompanyManagePostings from "./pages/company/ManagePostings.jsx";
 import ViewApplicants from "./pages/company/ViewApplicants.jsx";
@@ -38,12 +41,28 @@ import AdminDashboard from "./pages/admin/Dashboard.jsx";
 import AdminManagePostings from "./pages/admin/ManagePostings.jsx";
 import ManageUsers from "./pages/admin/ManageUsers.jsx";
 import Reports from "./pages/admin/Reports.jsx";
+import Moderation from "./pages/admin/Moderation.jsx";
+
+// Recruiter Pages
+import RecruiterLayout from "./pages/recruiter/RecruiterLayout.jsx";
+import RecruiterDashboard from "./pages/recruiter/Dashboard.jsx";
+import MyInternships from "./pages/recruiter/MyInternships.jsx";
+import Applicants from "./pages/recruiter/Applicants.jsx";
+import DiscoverStudents from "./pages/recruiter/DiscoverStudents.jsx";
+import SavedCandidates from "./pages/recruiter/SavedCandidates.jsx";
+import RecruiterProfile from "./pages/recruiter/Profile.jsx";
+import RecruiterSettings from "./pages/recruiter/Settings.jsx";
 
 // Protected Route Guard
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
   return (
+    <Suspense fallback={
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-[3px] border-orange-600 border-t-transparent"></div>
+        </div>
+    }>
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Landing />} />
@@ -78,6 +97,8 @@ function App() {
           <Route path="interviews" element={<StudentInterviews />} />
           <Route path="profile" element={<ViewProfile />} />
           <Route path="profile/edit" element={<EditProfile />} />
+          <Route path="saved" element={<Suspense fallback={null}><SavedInternships /></Suspense>} />
+          <Route path="ambassador" element={<CampusAmbassador />} />
         </Route>
 
         {/* Protected Company Routes */}
@@ -91,14 +112,34 @@ function App() {
         >
           <Route index element={<CompanyDashboard />} /> {/* /company */}
           <Route path="dashboard" element={<CompanyDashboard />} /> {/* /company/dashboard */}
-          <Route path="post" element={<PostInternship />} />
-          <Route path="edit/:id" element={<PostInternship />} />
+          <Route path="post" element={<PostInternship mode="company" />} />
+          <Route path="post/:internshipId" element={<PostInternship mode="company" />} />
           <Route path="manage" element={<CompanyManagePostings />} />
-          <Route path="manage" element={<CompanyManagePostings />} />
-          <Route path="applicants" element={<ViewApplicants />} />
+          <Route path="applications/:internshipId" element={<ViewApplicants />} />
           <Route path="interviews" element={<Interviews />} />
           <Route path="schedule-interview/:applicationId" element={<ScheduleInterview />} />
           <Route path="profile" element={<CompanyProfile />} />
+        </Route>
+
+        {/* Protected Recruiter Routes */}
+        <Route
+          path="/recruiter"
+          element={
+            <ProtectedRoute allowedRoles={["recruiter"]}>
+              <RecruiterLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<RecruiterDashboard />} /> {/* /recruiter */}
+          <Route path="dashboard" element={<RecruiterDashboard />} />
+          <Route path="post" element={<PostInternship mode="recruiter" />} />
+          <Route path="post/:internshipId" element={<PostInternship mode="recruiter" />} />
+          <Route path="my-internships" element={<MyInternships />} />
+          <Route path="applicants" element={<Applicants />} />
+          <Route path="discover" element={<DiscoverStudents />} />
+          <Route path="saved" element={<SavedCandidates />} />
+          <Route path="profile" element={<RecruiterProfile />} />
+          <Route path="settings" element={<RecruiterSettings />} />
         </Route>
 
         {/* Protected Admin Routes */}
@@ -115,11 +156,13 @@ function App() {
           <Route path="manage-postings" element={<AdminManagePostings />} />
           <Route path="manage-users" element={<ManageUsers />} />
           <Route path="reports" element={<Reports />} />
+          <Route path="moderation" element={<Moderation />} />
         </Route>
 
-        {/* Catch all — redirect to home */}
+        {/* Default Redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+    </Suspense>
   );
 }
 
