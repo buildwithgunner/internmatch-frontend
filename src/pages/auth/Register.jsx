@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Eye, EyeOff, ArrowLeft, CheckCircle2, Check, Sparkles } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, CheckCircle2, Check, Sparkles, ChevronDown, RefreshCcw, Globe } from "lucide-react";
+import api from "../../services/api.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import Button from "../../components/ui/Button.jsx";
 
@@ -20,8 +21,15 @@ function Register({ restrictedRole }) {
   // Recruiter Specific State
   const [recruiterType, setRecruiterType] = useState("independent");
   const [companyName, setCompanyName] = useState("");
+  const [sector, setSector] = useState("");
   const [position, setPosition] = useState("");
   const [website, setWebsite] = useState("");
+  const [country, setCountry] = useState("");
+
+  // Captcha & Countries State
+  const [countries, setCountries] = useState([]);
+  const [captcha, setCaptcha] = useState({ question: "", captchaKey: "" });
+  const [captchaAnswer, setCaptchaAnswer] = useState("");
 
   // Validation & Strength States
   const [strength, setStrength] = useState({ score: 0, label: "", color: "bg-slate-200", width: "0%" });
@@ -59,6 +67,39 @@ function Register({ restrictedRole }) {
     setStrength(evaluateStrength(password));
   }, [password]);
 
+  // Fetch Countries and Captcha
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [countriesRes, captchaRes] = await Promise.all([
+          api.get("/countries"),
+          api.get("/captcha")
+        ]);
+        setCountries(countriesRes.data);
+        setCaptcha({
+          question: captchaRes.data.question,
+          captchaKey: captchaRes.data.captcha_key
+        });
+      } catch (err) {
+        console.error("Failed to fetch initial data", err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const refreshCaptcha = async () => {
+    try {
+      const res = await api.get("/captcha");
+      setCaptcha({
+        question: res.data.question,
+        captchaKey: res.data.captcha_key
+      });
+      setCaptchaAnswer("");
+    } catch (err) {
+      console.error("Failed to refresh captcha", err);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isMatch || !isLengthValid) return;
@@ -71,6 +112,7 @@ function Register({ restrictedRole }) {
 
       if (role === "recruiter") {
         extraData.phone = phone;
+        extraData.sector = sector;
         extraData.recruiter_type = recruiterType;
         if (recruiterType === "company") {
           extraData.company_name = companyName;
@@ -82,6 +124,10 @@ function Register({ restrictedRole }) {
       if (role === "student") {
         extraData.referral_code = referralCode;
       }
+
+      extraData.country = country;
+      extraData.captcha_answer = captchaAnswer;
+      extraData.captcha_key = captcha.captchaKey;
 
       const data = await register(name, email, password, role, null, extraData);
       setSuccess(true);
@@ -158,6 +204,30 @@ function Register({ restrictedRole }) {
                 </div>
               </div>
 
+              {/* Country Selection */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Select Country</label>
+                <div className="relative">
+                  <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400">
+                    <Globe size={18} />
+                  </div>
+                  <select
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    className="w-full bg-slate-50 border-2 border-transparent rounded-2xl pl-14 pr-12 py-4 text-slate-900 focus:border-orange-500 focus:bg-white outline-none font-bold transition-all appearance-none"
+                    required
+                  >
+                    <option value="">Select your country</option>
+                    {countries.map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
+                    <ChevronDown size={20} />
+                  </div>
+                </div>
+              </div>
+
               {role === 'student' && (
                 <div className="space-y-2">
                   <div className="flex justify-between items-center px-1">
@@ -210,6 +280,35 @@ function Register({ restrictedRole }) {
                         >
                           Company
                         </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 pt-2">
+                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Industry / Sector</label>
+                    <div className="relative">
+                      <select
+                        value={sector}
+                        onChange={(e) => setSector(e.target.value)}
+                        className="w-full bg-slate-50 border-2 border-transparent rounded-2xl px-6 py-4 pr-12 text-slate-900 focus:border-orange-500 focus:bg-white outline-none font-bold transition-all appearance-none"
+                        required
+                      >
+                        <option value="" disabled>Select your industry</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Education">Education</option>
+                        <option value="Retail">Retail</option>
+                        <option value="Manufacturing">Manufacturing</option>
+                        <option value="Real Estate">Real Estate</option>
+                        <option value="Marketing & Advertising">Marketing & Advertising</option>
+                        <option value="Consulting">Consulting</option>
+                        <option value="Logistics & Supply Chain">Logistics & Supply Chain</option>
+                        <option value="Media & Entertainment">Media & Entertainment</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
+                        <ChevronDown size={20} />
                       </div>
                     </div>
                   </div>
@@ -290,6 +389,36 @@ function Register({ restrictedRole }) {
                     <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-orange-500 transition-colors">
                       {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Captcha Section */}
+              <div className="bg-slate-50 p-6 rounded-[2rem] border-2 border-slate-100 space-y-4">
+                <div className="flex justify-between items-center px-1">
+                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Security Challenge</label>
+                  <button
+                    type="button"
+                    onClick={refreshCaptcha}
+                    className="text-orange-600 hover:text-orange-700 transition-all flex items-center gap-1.5"
+                  >
+                    <RefreshCcw size={14} />
+                    <span className="text-[9px] font-black uppercase tracking-widest">Refresh</span>
+                  </button>
+                </div>
+
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-[2] bg-white rounded-2xl border-2 border-slate-200 px-6 py-4 flex items-center justify-center font-black text-lg text-slate-900 italic tracking-tight">
+                    {captcha.question || "Loading..."}
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      value={captchaAnswer}
+                      onChange={(e) => setCaptchaAnswer(e.target.value)}
+                      className="w-full h-full bg-white border-2 border-transparent rounded-2xl px-6 py-4 text-slate-900 focus:border-orange-500 focus:bg-white outline-none font-bold transition-all text-center text-xl"
+                      placeholder="Answer"
+                      required
+                    />
                   </div>
                 </div>
               </div>

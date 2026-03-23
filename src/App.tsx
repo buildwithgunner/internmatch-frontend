@@ -1,168 +1,177 @@
-import React, { lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+// @ts-ignore
+import ErrorBoundary from "./components/ErrorBoundary";
 
-// Public Auth Pages
+// ── Shared Fallback ──────────────────────────────────────────────────────────
+const PageLoader = () => (
+  <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+    <div className="animate-spin rounded-full h-12 w-12 border-[3px] border-orange-600 border-t-transparent"></div>
+  </div>
+);
+
+// ── Public Auth Pages (eagerly loaded – critical path) ───────────────────────
 import Landing from "./pages/auth/Landing.jsx";
 import Login from "./pages/auth/Login.jsx";
 import Register from "./pages/auth/Register.jsx";
-import ForgotPassword from "./pages/auth/ForgotPassword.jsx";
-import ResetPassword from "./pages/auth/ResetPassword.jsx";
-import OtpVerification from "./pages/auth/OtpVerification.jsx";
 
-// Public Static Pages
-import Privacy from "./pages/public/Privacy.jsx";
-import Terms from "./pages/public/Terms.jsx";
-import Contact from "./pages/public/Contact.jsx";
+// ── Lazy-loaded Auth Pages ───────────────────────────────────────────────────
+const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword.jsx"));
+const ResetPassword = lazy(() => import("./pages/auth/ResetPassword.jsx"));
+const OtpVerification = lazy(() => import("./pages/auth/OtpVerification.jsx"));
 
-// Student Pages
-import StudentLayout from "./pages/student/StudentLayout.jsx";
-import StudentDashboard from "./pages/student/Dashboard.jsx";
-import BrowseInternships from "./pages/student/BrowseInternships.jsx";
-import MyApplications from "./pages/student/MyApplications.jsx";
-import StudentInterviews from "./pages/student/Interviews.jsx";
-import ViewProfile from "./pages/student/ViewProfile.jsx";
-import EditProfile from "./pages/student/EditProfile.jsx";
-const SavedInternships = lazy(() => import('./pages/student/SavedInternships'));
-const CampusAmbassador = lazy(() => import('./pages/student/CampusAmbassador'));
+// ── Lazy-loaded Static Pages ─────────────────────────────────────────────────
+const Privacy = lazy(() => import("./pages/public/Privacy.jsx"));
+const Terms = lazy(() => import("./pages/public/Terms.jsx"));
+const Contact = lazy(() => import("./pages/public/Contact.jsx"));
 
-// Company Pages
-import CompanyLayout from "./pages/company/CompanyLayout.jsx";
-const CompanyDashboard = lazy(() => import('./pages/company/Dashboard')); // Changed to lazy import
-import PostInternship from "./pages/company/PostInternship.jsx";
-import CompanyManagePostings from "./pages/company/ManagePostings.jsx";
-import ViewApplicants from "./pages/company/ViewApplicants.jsx";
-import CompanyProfile from "./pages/company/CompanyProfile.jsx";
-import Interviews from "./pages/company/Interviews.jsx";
-import ScheduleInterview from "./pages/company/ScheduleInterview.jsx";
+// ── Lazy-loaded Student Pages ────────────────────────────────────────────────
+const StudentLayout = lazy(() => import("./pages/student/StudentLayout.jsx"));
+const StudentDashboard = lazy(() => import("./pages/student/Dashboard.jsx"));
+const BrowseInternships = lazy(() => import("./pages/student/BrowseInternships.jsx"));
+const MyApplications = lazy(() => import("./pages/student/MyApplications.jsx"));
+const StudentInterviews = lazy(() => import("./pages/student/Interviews.jsx"));
+const ViewProfile = lazy(() => import("./pages/student/ViewProfile.jsx"));
+const EditProfile = lazy(() => import("./pages/student/EditProfile.jsx"));
+const SavedInternships = lazy(() => import("./pages/student/SavedInternships"));
+const CampusAmbassador = lazy(() => import("./pages/student/CampusAmbassador"));
 
-// Admin Pages
-import AdminLayout from "./pages/admin/AdminLayout.jsx";
-import AdminDashboard from "./pages/admin/Dashboard.jsx";
-import AdminManagePostings from "./pages/admin/ManagePostings.jsx";
-import ManageUsers from "./pages/admin/ManageUsers.jsx";
-import Reports from "./pages/admin/Reports.jsx";
-import Moderation from "./pages/admin/Moderation.jsx";
+// ── Lazy-loaded Company Pages ────────────────────────────────────────────────
+const CompanyLayout = lazy(() => import("./pages/company/CompanyLayout.jsx"));
+const CompanyDashboard = lazy(() => import("./pages/company/Dashboard"));
+const PostInternship = lazy(() => import("./pages/company/PostInternship.jsx"));
+const CompanyManagePostings = lazy(() => import("./pages/company/ManagePostings.jsx"));
+const ViewApplicants = lazy(() => import("./pages/company/ViewApplicants.jsx"));
+const CompanyProfile = lazy(() => import("./pages/company/CompanyProfile.jsx"));
+const Interviews = lazy(() => import("./pages/company/Interviews.jsx"));
+const ScheduleInterview = lazy(() => import("./pages/company/ScheduleInterview.jsx"));
 
-// Recruiter Pages
-import RecruiterLayout from "./pages/recruiter/RecruiterLayout.jsx";
-import RecruiterDashboard from "./pages/recruiter/Dashboard.jsx";
-import MyInternships from "./pages/recruiter/MyInternships.jsx";
-import Applicants from "./pages/recruiter/Applicants.jsx";
-import DiscoverStudents from "./pages/recruiter/DiscoverStudents.jsx";
-import SavedCandidates from "./pages/recruiter/SavedCandidates.jsx";
-import RecruiterProfile from "./pages/recruiter/Profile.jsx";
-import RecruiterSettings from "./pages/recruiter/Settings.jsx";
+// ── Lazy-loaded Admin Pages ──────────────────────────────────────────────────
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout.jsx"));
+const AdminDashboard = lazy(() => import("./pages/admin/Dashboard.jsx"));
+const AdminManagePostings = lazy(() => import("./pages/admin/ManagePostings.jsx"));
+const ManageUsers = lazy(() => import("./pages/admin/ManageUsers.jsx"));
+const Reports = lazy(() => import("./pages/admin/Reports.jsx"));
+const Moderation = lazy(() => import("./pages/admin/Moderation.jsx"));
 
-// Protected Route Guard
+// ── Lazy-loaded Recruiter Pages ──────────────────────────────────────────────
+const RecruiterLayout = lazy(() => import("./pages/recruiter/RecruiterLayout.jsx"));
+const RecruiterDashboard = lazy(() => import("./pages/recruiter/Dashboard.jsx"));
+const MyInternships = lazy(() => import("./pages/recruiter/MyInternships.jsx"));
+const Applicants = lazy(() => import("./pages/recruiter/Applicants.jsx"));
+const DiscoverStudents = lazy(() => import("./pages/recruiter/DiscoverStudents.jsx"));
+const SavedCandidates = lazy(() => import("./pages/recruiter/SavedCandidates.jsx"));
+const RecruiterProfile = lazy(() => import("./pages/recruiter/Profile.jsx"));
+const RecruiterSettings = lazy(() => import("./pages/recruiter/Settings.jsx"));
+
+// ── Protected Route Guard ────────────────────────────────────────────────────
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
   return (
-    <Suspense fallback={
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-[3px] border-orange-600 border-t-transparent"></div>
-        </div>
-    }>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/otp-verification" element={<OtpVerification />} />
-        
-        {/* Static Pages */}
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/contact" element={<Contact />} />
-        
-        {/* Admin Public Routes */}
-        <Route path="/admin/login" element={<Login restrictedRole="admin" />} />
-        <Route path="/admin/register" element={<Register restrictedRole="admin" />} />
+    <ErrorBoundary>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/otp-verification" element={<OtpVerification />} />
 
-        {/* Protected Student Routes */}
-        <Route
-          path="/student"
-          element={
-            <ProtectedRoute allowedRoles={["student"]}>
-              <StudentLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<StudentDashboard />} /> {/* /student */}
-          <Route path="dashboard" element={<StudentDashboard />} /> {/* /student/dashboard */}
-          <Route path="browse" element={<BrowseInternships />} />
-          <Route path="applications" element={<MyApplications />} />
-          <Route path="interviews" element={<StudentInterviews />} />
-          <Route path="profile" element={<ViewProfile />} />
-          <Route path="profile/edit" element={<EditProfile />} />
-          <Route path="saved" element={<Suspense fallback={null}><SavedInternships /></Suspense>} />
-          <Route path="ambassador" element={<CampusAmbassador />} />
-        </Route>
+          {/* Static Pages */}
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/contact" element={<Contact />} />
 
-        {/* Protected Company Routes */}
-        <Route
-          path="/company"
-          element={
-            <ProtectedRoute allowedRoles={["company"]}>
-              <CompanyLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<CompanyDashboard />} /> {/* /company */}
-          <Route path="dashboard" element={<CompanyDashboard />} /> {/* /company/dashboard */}
-          <Route path="post" element={<PostInternship mode="company" />} />
-          <Route path="post/:internshipId" element={<PostInternship mode="company" />} />
-          <Route path="manage" element={<CompanyManagePostings />} />
-          <Route path="applications/:internshipId" element={<ViewApplicants />} />
-          <Route path="interviews" element={<Interviews />} />
-          <Route path="schedule-interview/:applicationId" element={<ScheduleInterview />} />
-          <Route path="profile" element={<CompanyProfile />} />
-        </Route>
+          {/* Admin Public Routes */}
+          <Route path="/admin/login" element={<Login restrictedRole="admin" />} />
+          <Route path="/admin/register" element={<Register restrictedRole="admin" />} />
 
-        {/* Protected Recruiter Routes */}
-        <Route
-          path="/recruiter"
-          element={
-            <ProtectedRoute allowedRoles={["recruiter"]}>
-              <RecruiterLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<RecruiterDashboard />} /> {/* /recruiter */}
-          <Route path="dashboard" element={<RecruiterDashboard />} />
-          <Route path="post" element={<PostInternship mode="recruiter" />} />
-          <Route path="post/:internshipId" element={<PostInternship mode="recruiter" />} />
-          <Route path="my-internships" element={<MyInternships />} />
-          <Route path="applicants" element={<Applicants />} />
-          <Route path="discover" element={<DiscoverStudents />} />
-          <Route path="saved" element={<SavedCandidates />} />
-          <Route path="profile" element={<RecruiterProfile />} />
-          <Route path="settings" element={<RecruiterSettings />} />
-        </Route>
+          {/* Protected Student Routes */}
+          <Route
+            path="/student"
+            element={
+              <ProtectedRoute allowedRoles={["student"]}>
+                <StudentLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<StudentDashboard />} />
+            <Route path="dashboard" element={<StudentDashboard />} />
+            <Route path="browse" element={<BrowseInternships />} />
+            <Route path="applications" element={<MyApplications />} />
+            <Route path="interviews" element={<StudentInterviews />} />
+            <Route path="profile" element={<ViewProfile />} />
+            <Route path="profile/edit" element={<EditProfile />} />
+            <Route path="saved" element={<SavedInternships />} />
+            <Route path="ambassador" element={<CampusAmbassador />} />
+          </Route>
 
-        {/* Protected Admin Routes */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<AdminDashboard />} /> {/* /admin */}
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="manage-postings" element={<AdminManagePostings />} />
-          <Route path="manage-users" element={<ManageUsers />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="moderation" element={<Moderation />} />
-        </Route>
+          {/* Protected Company Routes */}
+          <Route
+            path="/company"
+            element={
+              <ProtectedRoute allowedRoles={["company"]}>
+                <CompanyLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<CompanyDashboard />} />
+            <Route path="dashboard" element={<CompanyDashboard />} />
+            <Route path="post" element={<PostInternship mode="company" />} />
+            <Route path="post/:internshipId" element={<PostInternship mode="company" />} />
+            <Route path="manage" element={<CompanyManagePostings />} />
+            <Route path="applications/:internshipId" element={<ViewApplicants />} />
+            <Route path="interviews" element={<Interviews />} />
+            <Route path="schedule-interview/:applicationId" element={<ScheduleInterview />} />
+            <Route path="profile" element={<CompanyProfile />} />
+          </Route>
 
-        {/* Default Redirect */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Suspense>
+          {/* Protected Recruiter Routes */}
+          <Route
+            path="/recruiter"
+            element={
+              <ProtectedRoute allowedRoles={["recruiter"]}>
+                <RecruiterLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<RecruiterDashboard />} />
+            <Route path="dashboard" element={<RecruiterDashboard />} />
+            <Route path="post" element={<PostInternship mode="recruiter" />} />
+            <Route path="post/:internshipId" element={<PostInternship mode="recruiter" />} />
+            <Route path="my-internships" element={<MyInternships />} />
+            <Route path="applicants" element={<Applicants />} />
+            <Route path="discover" element={<DiscoverStudents />} />
+            <Route path="saved" element={<SavedCandidates />} />
+            <Route path="profile" element={<RecruiterProfile />} />
+            <Route path="settings" element={<RecruiterSettings />} />
+          </Route>
+
+          {/* Protected Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="manage-postings" element={<AdminManagePostings />} />
+            <Route path="manage-users" element={<ManageUsers />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="moderation" element={<Moderation />} />
+          </Route>
+
+          {/* Default Redirect */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api.js';
-import { Eye, ShieldAlert, Trash2, CheckCircle, XCircle, ShieldCheck } from 'lucide-react';
+import { Eye, ShieldAlert, Trash2, CheckCircle, XCircle, ShieldCheck, RotateCcw } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 function ManageUsers() {
@@ -98,7 +98,7 @@ function ManageUsers() {
         fetchUsers();
         // If modal is open, we need to refresh selectedUser data
         if (isModalOpen && selectedUser?.user.id === id) {
-             handleViewUser(type, id);
+          handleViewUser(type, id);
         }
       } catch (err) {
         Swal.fire('Error', 'Failed to update verification status', 'error');
@@ -106,25 +106,32 @@ function ManageUsers() {
     }
   };
 
-  const handleDeleteUser = async (type, id) => {
+  const handleDeleteUser = async (type, id, isAlreadyDeleted = false) => {
     const result = await Swal.fire({
-      title: 'CRITICAL ACTION',
-      text: 'Are you sure you want to PERMANENTLY delete this user? This action cannot be undone.',
+      title: isAlreadyDeleted ? 'PERMANENT REMOVAL' : 'CRITICAL ACTION',
+      text: isAlreadyDeleted
+        ? 'This will IRREVERSIBLY delete all records from the database. Proceed with caution!'
+        : 'Are you sure you want to deactivate this user? They will not be able to log in, but you can restore them later.',
       icon: 'error',
       showCancelButton: true,
       confirmButtonColor: '#ef4444',
       cancelButtonColor: '#334155',
-      confirmButtonText: 'Yes, DELETE forever',
+      confirmButtonText: isAlreadyDeleted ? 'Yes, DELETE forever' : 'Yes, Deactivate',
       background: '#0f172a',
       color: '#fff'
     });
 
     if (result.isConfirmed) {
       try {
-        await api.delete(`/admin/users/${type}/${id}`);
+        if (isAlreadyDeleted) {
+          await api.delete(`/admin/users/${type}/${id}/force`);
+        } else {
+          await api.delete(`/admin/users/${type}/${id}`);
+        }
+
         Swal.fire({
-          title: 'Deleted!',
-          text: 'User has been permanently removed.',
+          title: isAlreadyDeleted ? 'Permanently Deleted!' : 'Deactivated!',
+          text: isAlreadyDeleted ? 'User record has been removed forever.' : 'User account has been deactivated.',
           icon: 'success',
           background: '#0f172a',
           color: '#fff'
@@ -133,6 +140,36 @@ function ManageUsers() {
         if (isModalOpen) setIsModalOpen(false);
       } catch (err) {
         Swal.fire('Error', 'Failed to delete user', 'error');
+      }
+    }
+  };
+
+  const handleRestoreUser = async (type, id) => {
+    const result = await Swal.fire({
+      title: 'Restore Account',
+      text: 'Are you sure you want to reactivate this user account?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#10b981',
+      cancelButtonColor: '#334155',
+      confirmButtonText: 'Yes, Restore it!',
+      background: '#0f172a',
+      color: '#fff'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await api.post(`/admin/users/${type}/${id}/restore`);
+        Swal.fire({
+          title: 'Restored!',
+          text: 'User account is now active again.',
+          icon: 'success',
+          background: '#0f172a',
+          color: '#fff'
+        });
+        fetchUsers();
+      } catch (err) {
+        Swal.fire('Error', 'Failed to restore user', 'error');
       }
     }
   };
@@ -205,7 +242,7 @@ function ManageUsers() {
                     <td className="py-4 text-slate-400">{company.email}</td>
                     <td className="py-4 text-center">
                       <div className="flex justify-center">
-                        <button 
+                        <button
                           onClick={() => handleToggleVerify('company', company.id, company.is_verified)}
                           className={`badge ${company.is_verified ? 'badge-success' : 'badge-warning'} badge-sm cursor-pointer hover:scale-105 transition-transform`}
                         >
@@ -214,7 +251,9 @@ function ManageUsers() {
                       </div>
                     </td>
                     <td className="py-4 text-center">
-                      {company.is_banned ? (
+                      {company.deleted_at ? (
+                        <span className="badge badge-error font-bold badge-sm">DEACTIVATED</span>
+                      ) : company.is_banned ? (
                         <span className="badge badge-error badge-outline badge-sm">Suspended</span>
                       ) : (
                         <span className="badge badge-success badge-outline badge-sm">Active</span>
@@ -223,13 +262,23 @@ function ManageUsers() {
                     <td className="py-4">
                       <div className="flex justify-end gap-2">
                         <button onClick={() => handleViewUser('company', company.id)} className="btn btn-square btn-ghost btn-sm text-primary" title="View Details"><Eye size={18} /></button>
-                        <button onClick={() => handleToggleVerify('company', company.id, company.is_verified)} className={`btn btn-square btn-ghost btn-sm ${company.is_verified ? 'text-success' : 'text-slate-500'}`} title={company.is_verified ? 'Unverify' : 'Verify'}>
-                          <ShieldCheck size={18} />
-                        </button>
-                        <button onClick={() => handleToggleBan('company', company.id, company.is_banned)} className={`btn btn-square btn-ghost btn-sm ${company.is_banned ? 'text-success' : 'text-warning'}`} title={company.is_banned ? 'Activate' : 'Suspend'}>
-                          {company.is_banned ? <CheckCircle size={18} /> : <ShieldAlert size={18} />}
-                        </button>
-                        <button onClick={() => handleDeleteUser('company', company.id)} className="btn btn-square btn-ghost btn-sm text-error" title="Delete Permanently"><Trash2 size={18} /></button>
+
+                        {!company.deleted_at ? (
+                          <>
+                            <button onClick={() => handleToggleVerify('company', company.id, company.is_verified)} className={`btn btn-square btn-ghost btn-sm ${company.is_verified ? 'text-success' : 'text-slate-500'}`} title={company.is_verified ? 'Unverify' : 'Verify'}>
+                              <ShieldCheck size={18} />
+                            </button>
+                            <button onClick={() => handleToggleBan('company', company.id, company.is_banned)} className={`btn btn-square btn-ghost btn-sm ${company.is_banned ? 'text-success' : 'text-warning'}`} title={company.is_banned ? 'Activate' : 'Suspend'}>
+                              {company.is_banned ? <CheckCircle size={18} /> : <ShieldAlert size={18} />}
+                            </button>
+                            <button onClick={() => handleDeleteUser('company', company.id, false)} className="btn btn-square btn-ghost btn-sm text-error" title="Deactivate Account"><Trash2 size={18} /></button>
+                          </>
+                        ) : (
+                          <>
+                            <button onClick={() => handleRestoreUser('company', company.id)} className="btn btn-square btn-ghost btn-sm text-success" title="Restore Account"><RotateCcw size={18} /></button>
+                            <button onClick={() => handleDeleteUser('company', company.id, true)} className="btn btn-square btn-ghost btn-sm text-error" title="Permanent Delete"><Trash2 size={18} /></button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -270,25 +319,41 @@ function ManageUsers() {
                     <td className="py-4 text-base-content/70 font-medium">{recruiter.company_name || 'Individual'}</td>
                     <td className="py-4 text-center">
                       <div className="flex flex-col gap-1 items-center">
-                        <span 
-                          onClick={() => handleToggleVerify('recruiter', recruiter.id, recruiter.is_verified)}
-                          className={`badge ${recruiter.is_verified ? 'badge-success' : 'badge-warning'} badge-sm cursor-pointer`}
-                        >
-                          {recruiter.is_verified ? 'Verified' : 'Pending'}
-                        </span>
-                        {recruiter.is_banned && <span className="badge badge-error badge-sm">Suspended</span>}
+                        {recruiter.deleted_at ? (
+                          <span className="badge badge-error font-bold badge-sm">DEACTIVATED</span>
+                        ) : (
+                          <>
+                            <span
+                              onClick={() => handleToggleVerify('recruiter', recruiter.id, recruiter.is_verified)}
+                              className={`badge ${recruiter.is_verified ? 'badge-success' : 'badge-warning'} badge-sm cursor-pointer`}
+                            >
+                              {recruiter.is_verified ? 'Verified' : 'Pending'}
+                            </span>
+                            {recruiter.is_banned && <span className="badge badge-error badge-sm">Suspended</span>}
+                          </>
+                        )}
                       </div>
                     </td>
                     <td className="py-4 text-right">
                       <div className="flex justify-end gap-2">
                         <button onClick={() => handleViewUser('recruiter', recruiter.id)} className="btn btn-square btn-ghost btn-sm text-primary" title="Details"><Eye size={18} /></button>
-                        <button onClick={() => handleToggleVerify('recruiter', recruiter.id, recruiter.is_verified)} className={`btn btn-square btn-ghost btn-sm ${recruiter.is_verified ? 'text-success' : 'text-slate-500'}`} title="Toggle Verification">
-                          <ShieldCheck size={18} />
-                        </button>
-                        <button onClick={() => handleToggleBan('recruiter', recruiter.id, recruiter.is_banned)} className={`btn btn-square btn-ghost btn-sm ${recruiter.is_banned ? 'text-success' : 'text-warning'}`} title="Account Access">
-                          {recruiter.is_banned ? <CheckCircle size={18} /> : <ShieldAlert size={18} />}
-                        </button>
-                        <button onClick={() => handleDeleteUser('recruiter', recruiter.id)} className="btn btn-square btn-ghost btn-sm text-error" title="Delete Account"><Trash2 size={18} /></button>
+
+                        {!recruiter.deleted_at ? (
+                          <>
+                            <button onClick={() => handleToggleVerify('recruiter', recruiter.id, recruiter.is_verified)} className={`btn btn-square btn-ghost btn-sm ${recruiter.is_verified ? 'text-success' : 'text-slate-500'}`} title="Toggle Verification">
+                              <ShieldCheck size={18} />
+                            </button>
+                            <button onClick={() => handleToggleBan('recruiter', recruiter.id, recruiter.is_banned)} className={`btn btn-square btn-ghost btn-sm ${recruiter.is_banned ? 'text-success' : 'text-warning'}`} title="Account Access">
+                              {recruiter.is_banned ? <CheckCircle size={18} /> : <ShieldAlert size={18} />}
+                            </button>
+                            <button onClick={() => handleDeleteUser('recruiter', recruiter.id, false)} className="btn btn-square btn-ghost btn-sm text-error" title="Deactivate"><Trash2 size={18} /></button>
+                          </>
+                        ) : (
+                          <>
+                            <button onClick={() => handleRestoreUser('recruiter', recruiter.id)} className="btn btn-square btn-ghost btn-sm text-success" title="Restore Account"><RotateCcw size={18} /></button>
+                            <button onClick={() => handleDeleteUser('recruiter', recruiter.id, true)} className="btn btn-square btn-ghost btn-sm text-error" title="Permanent Delete"><Trash2 size={18} /></button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -326,26 +391,42 @@ function ManageUsers() {
                       <div className="text-sm text-base-content/50">{student.email}</div>
                     </td>
                     <td className="py-4 text-center">
-                       <div className="flex flex-col gap-1 items-center">
-                        <span 
-                          onClick={() => handleToggleVerify('student', student.id, student.is_verified)}
-                          className={`badge ${student.is_verified ? 'badge-success' : 'badge-warning'} badge-sm cursor-pointer`}
-                        >
-                          {student.is_verified ? 'Verified' : 'Pending'}
-                        </span>
-                        {student.is_banned && <span className="badge badge-error badge-sm">Suspended</span>}
+                      <div className="flex flex-col gap-1 items-center">
+                        {student.deleted_at ? (
+                          <span className="badge badge-error font-bold badge-sm">DEACTIVATED</span>
+                        ) : (
+                          <>
+                            <span
+                              onClick={() => handleToggleVerify('student', student.id, student.is_verified)}
+                              className={`badge ${student.is_verified ? 'badge-success' : 'badge-warning'} badge-sm cursor-pointer`}
+                            >
+                              {student.is_verified ? 'Verified' : 'Pending'}
+                            </span>
+                            {student.is_banned && <span className="badge badge-error badge-sm">Suspended</span>}
+                          </>
+                        )}
                       </div>
                     </td>
                     <td className="py-4 text-right">
                       <div className="flex justify-end gap-2">
                         <button onClick={() => handleViewUser('student', student.id)} className="btn btn-square btn-ghost btn-sm text-primary" title="View Profile"><Eye size={18} /></button>
-                        <button onClick={() => handleToggleVerify('student', student.id, student.is_verified)} className={`btn btn-square btn-ghost btn-sm ${student.is_verified ? 'text-success' : 'text-slate-500'}`} title="Verify Student">
-                          <ShieldCheck size={18} />
-                        </button>
-                        <button onClick={() => handleToggleBan('student', student.id, student.is_banned)} className={`btn btn-square btn-ghost btn-sm ${student.is_banned ? 'text-success' : 'text-warning'}`} title="Suspend / Activate">
-                          {student.is_banned ? <CheckCircle size={18} /> : <ShieldAlert size={18} />}
-                        </button>
-                        <button onClick={() => handleDeleteUser('student', student.id)} className="btn btn-square btn-ghost btn-sm text-error" title="Remove User"><Trash2 size={18} /></button>
+
+                        {!student.deleted_at ? (
+                          <>
+                            <button onClick={() => handleToggleVerify('student', student.id, student.is_verified)} className={`btn btn-square btn-ghost btn-sm ${student.is_verified ? 'text-success' : 'text-slate-500'}`} title="Verify Student">
+                              <ShieldCheck size={18} />
+                            </button>
+                            <button onClick={() => handleToggleBan('student', student.id, student.is_banned)} className={`btn btn-square btn-ghost btn-sm ${student.is_banned ? 'text-success' : 'text-warning'}`} title="Suspend / Activate">
+                              {student.is_banned ? <CheckCircle size={18} /> : <ShieldAlert size={18} />}
+                            </button>
+                            <button onClick={() => handleDeleteUser('student', student.id, false)} className="btn btn-square btn-ghost btn-sm text-error" title="Deactivate User"><Trash2 size={18} /></button>
+                          </>
+                        ) : (
+                          <>
+                            <button onClick={() => handleRestoreUser('student', student.id)} className="btn btn-square btn-ghost btn-sm text-success" title="Restore Account"><RotateCcw size={18} /></button>
+                            <button onClick={() => handleDeleteUser('student', student.id, true)} className="btn btn-square btn-ghost btn-sm text-error" title="Permanent Delete"><Trash2 size={18} /></button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -365,7 +446,7 @@ function ManageUsers() {
           <div className="modal-box bg-base-100 border border-base-300 max-w-2xl">
             <div className="flex justify-between items-start mb-6">
               <h3 className="font-bold text-2xl text-base-content capitalize">{selectedUser.type} Profile</h3>
-              <button 
+              <button
                 onClick={() => setIsModalOpen(false)}
                 className="btn btn-sm btn-circle btn-ghost text-base-content/50"
               >
@@ -389,9 +470,9 @@ function ManageUsers() {
                   <p className="text-base-content/50 mb-1 font-medium">Account Details</p>
                   <p className="text-base-content font-bold mb-1">Joined: {new Date(selectedUser.user.created_at).toLocaleDateString()}</p>
                   <div className="flex items-center gap-2">
-                    {selectedUser.user.email_verified_at ? 
-                      <span className="text-success text-xs font-bold flex items-center gap-1"><CheckCircle size={12}/> Email Verified</span> : 
-                      <span className="text-warning text-xs font-bold flex items-center gap-1"><XCircle size={12}/> Email Unverified</span>
+                    {selectedUser.user.email_verified_at ?
+                      <span className="text-success text-xs font-bold flex items-center gap-1"><CheckCircle size={12} /> Email Verified</span> :
+                      <span className="text-warning text-xs font-bold flex items-center gap-1"><XCircle size={12} /> Email Unverified</span>
                     }
                   </div>
                 </div>
@@ -399,12 +480,12 @@ function ManageUsers() {
                 <div className="p-4 bg-base-200/50 rounded-lg border border-base-300">
                   <p className="text-base-content/50 mb-1 font-medium">Admin Verification</p>
                   <div className="flex items-center gap-2">
-                    {selectedUser.user.is_verified ? 
+                    {selectedUser.user.is_verified ?
                       <span className="bg-success/20 text-success px-2 py-1 rounded text-xs font-black flex items-center gap-1">
-                        <ShieldCheck size={14}/> IDENTITY VERIFIED
-                      </span> : 
+                        <ShieldCheck size={14} /> IDENTITY VERIFIED
+                      </span> :
                       <span className="bg-warning/20 text-warning px-2 py-1 rounded text-xs font-black flex items-center gap-1">
-                        <ShieldAlert size={14}/> PENDING REVIEW
+                        <ShieldAlert size={14} /> PENDING REVIEW
                       </span>
                     }
                   </div>
@@ -471,13 +552,13 @@ function ManageUsers() {
             </div>
 
             <div className="modal-action gap-2">
-              <button 
+              <button
                 onClick={() => handleToggleBan(selectedUser.type, selectedUser.user.id, selectedUser.user.is_banned)}
                 className={`btn ${selectedUser.user.is_banned ? 'btn-success' : 'btn-warning'} btn-outline flex-1`}
               >
                 {selectedUser.user.is_banned ? 'Activate Account' : 'Suspend Account'}
               </button>
-              <button 
+              <button
                 onClick={() => handleToggleVerify(selectedUser.type, selectedUser.user.id, selectedUser.user.is_verified)}
                 className={`btn ${selectedUser.user.is_verified ? 'btn-ghost' : 'btn-info'} flex-1`}
               >

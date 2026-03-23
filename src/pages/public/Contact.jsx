@@ -11,7 +11,7 @@ const Contact = () => {
                 <div className="flex items-center justify-between px-6 py-4 max-w-5xl mx-auto">
                     <Link to="/" className="text-xl font-black tracking-tighter flex items-center gap-2">
                         <span className="bg-[#FF6B00] text-white px-2 py-0.5 rounded-lg">IM</span>
-                        <span className="dark:text-white">INTERNMATCH</span>
+                        <span className="dark:text-white">InternMatch</span>
                     </Link>
                     <div className="flex items-center gap-4">
                         <ThemeToggle />
@@ -105,7 +105,7 @@ const Contact = () => {
             </main>
 
             <footer className="mt-12 py-12 px-6 border-t border-gray-100 dark:border-gray-800 text-center">
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">© 2026 INTERNMATCH — RESPONSE WITHIN 24 HOURS.</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">© 2026 InternMatch — RESPONSE WITHIN 24 HOURS.</p>
             </footer>
         </div>
     );

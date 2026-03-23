@@ -105,21 +105,22 @@ const OtpVerification = () => {
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-8">
-                        <div className="flex justify-between gap-2">
-                            {otp.map((digit, index) => (
-                                <input
-                                    key={index}
-                                    ref={(el) => (inputRefs.current[index] = el)}
-                                    type="text"
-                                    maxLength={1}
-                                    value={digit}
-                                    onChange={(e) => handleChange(index, e.target.value)}
-                                    onKeyDown={(e) => handleKeyDown(index, e)}
-                                    onPaste={index === 0 ? handlePaste : undefined}
-                                    className="w-full h-14 text-center text-xl font-black border-2 border-slate-50 bg-slate-50 rounded-xl focus:border-orange-500 focus:bg-white transition-all outline-none"
-                                />
-                            ))}
-                        </div>
+                       <div className="flex justify-between gap-2">
+    {otp.map((digit, index) => (
+        <input
+            key={index}
+            ref={(el) => (inputRefs.current[index] = el)}
+            type="text"
+            maxLength={1}
+            value={digit}
+            onChange={(e) => handleChange(index, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(index, e)}
+            onPaste={index === 0 ? handlePaste : undefined}
+            // Added text-slate-900 for visibility and border-slate-200 for better contrast
+            className="w-full h-14 text-center text-2xl font-black border-2 border-slate-200 bg-slate-50 text-slate-900 focus:text-orange-600 focus:border-orange-500 focus:bg-white transition-all outline-none rounded-xl"
+        />
+    ))}
+</div>
 
                         <div className="space-y-4">
                             <Button type="submit" loading={isLoading} className="w-full h-16 bg-slate-900 hover:bg-orange-600 text-white rounded-2xl font-black text-xs tracking-widest transition-all">

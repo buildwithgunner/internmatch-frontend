@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import {
-  Search, MapPin, Globe,
-  DollarSign, Zap, LayoutGrid,
-  ArrowRight, SearchCode, X
+  Search, MapPin, Globe, DollarSign, Zap, LayoutGrid,
+  ArrowRight, SearchCode, X, Filter, Sparkles, Briefcase
 } from 'lucide-react';
 import api from '../../services/api.js';
 import InternshipCard from "../../components/cards/InternshipsCard.jsx";
@@ -34,6 +33,11 @@ function BrowseInternships() {
     fetchInternships();
   }, []);
 
+  const resetFilters = () => {
+    setFilters({ type: 'All', paid: false, location: '', category: 'All' });
+    setSearchQuery('');
+  };
+
   const filteredInternships = useMemo(() => {
     return internships.filter(intern => {
       const q = searchQuery.toLowerCase();
@@ -51,157 +55,213 @@ function BrowseInternships() {
   }, [searchQuery, filters, internships]);
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-950">
-      <div className="w-16 h-16 border-4 border-orange-200 dark:border-slate-700 border-t-orange-600 dark:border-t-orange-500 rounded-full animate-spin" />
-      <p className="mt-6 text-sm font-medium text-slate-500 dark:text-slate-400">Discovering opportunities...</p>
+    <div className="max-w-7xl mx-auto p-8 space-y-8 animate-pulse mt-20">
+      <div className="h-64 bg-slate-200 dark:bg-slate-800 rounded-[3rem]" />
+      <div className="h-20 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {[1, 2, 3].map(i => <div key={i} className="h-80 bg-slate-200 dark:bg-slate-800 rounded-3xl" />)}
+      </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-slate-50/70 dark:bg-slate-950/70 transition-colors duration-300">
-      {/* Hero Section – Glass overlay + modern orange */}
-      <div className="relative bg-gradient-to-br from-orange-700 to-orange-600 pt-20 pb-40 px-6 overflow-hidden shadow-2xl shadow-orange-600/20">
-        <div className="absolute inset-0 backdrop-blur-2xl bg-white/5 dark:bg-black/10" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
+    <div className="min-h-screen bg-[#FDFDFD] dark:bg-[#080808] transition-colors duration-300">
+      {/* Modern Hero Section */}
+      <div className="relative bg-[#FF6B00] pt-24 pb-44 px-6 overflow-hidden">
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/20 rounded-full blur-[100px]" />
 
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
-            <div className="space-y-5 max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-5 py-2 bg-white/15 backdrop-blur-xl rounded-full text-white text-xs font-semibold uppercase tracking-wide border border-white/20">
-                <Zap size={14} fill="currentColor" /> Opportunity Hub
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-black/10 backdrop-blur-md rounded-full text-white text-[10px] font-black uppercase tracking-[0.2em] border border-white/10">
+                <Sparkles size={12} /> Live Opportunities
               </div>
-              <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white leading-tight">
-                Discover <span className="text-orange-200">Your Next</span> Step
+              <h1 className="text-5xl md:text-8xl font-[1000] tracking-tighter text-white leading-[0.85] uppercase italic">
+                YOUR FUTURE <br /> <span className="text-black/30">STARTS HERE.</span>
               </h1>
-              <p className="text-lg text-orange-100/90 font-medium">
-                Explore the latest internships tailored to your profile.
-              </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-5 min-w-[300px]">
-              <div className="p-6 bg-white/15 backdrop-blur-xl border border-white/20 rounded-3xl text-white text-center shadow-xl">
-                <p className="text-xs font-semibold uppercase tracking-wide opacity-70 mb-2">Live Roles</p>
-                <p className="text-4xl font-extrabold">{internships.length}</p>
-              </div>
-              <div className="p-6 bg-white/90 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl text-orange-700 dark:text-orange-300 text-center shadow-xl">
-                <p className="text-xs font-semibold uppercase tracking-wide opacity-70 mb-2">Status</p>
-                <p className="text-4xl font-extrabold italic">Active</p>
+            <div className="flex gap-4">
+              <div className="px-8 py-6 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl text-white">
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">Available Roles</p>
+                <p className="text-4xl font-black leading-none">{internships.length}</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 -mt-20 relative z-20 pb-20 space-y-12">
-        {/* Filters Bar – Glassmorphic */}
-        <div className="bg-white/30 dark:bg-slate-900/30 backdrop-blur-2xl border border-slate-200/50 dark:border-slate-700/40 rounded-3xl p-5 shadow-2xl flex flex-col md:flex-row gap-4 items-stretch">
-          <div className="relative flex-1">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={20} />
-            <input
-              placeholder="Search roles, skills, companies..."
-              className="w-full pl-14 pr-12 py-4 bg-transparent rounded-2xl border border-slate-300/50 dark:border-slate-600/50 focus:border-orange-500 dark:focus:border-orange-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-            />
-            {searchQuery && (
-              <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 rounded-full">
-                <X size={16} className="text-slate-500 dark:text-slate-400" />
+      {/* Content Container */}
+      <div className="max-w-7xl mx-auto px-6 -mt-24 relative z-20 pb-20 space-y-12">
+
+        {/* Responsive Filter Bar */}
+        <div className="bg-white dark:bg-zinc-900 border-2 border-black dark:border-white/10 rounded-[2.5rem] p-4 md:p-6 shadow-2xl space-y-4">
+          <div className="flex flex-col xl:flex-row gap-4">
+            {/* Search Input */}
+            <div className="relative flex-[2]">
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400" size={20} />
+              <input
+                placeholder="Search roles, skills, or companies..."
+                className="w-full pl-16 pr-6 py-5 bg-zinc-100 dark:bg-white/5 rounded-2xl outline-none font-bold text-sm focus:ring-2 ring-[#FF6B00]/20 transition-all"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+            </div>
+
+            {/* Dropdowns */}
+            <div className="flex flex-col sm:flex-row flex-[3] gap-4">
+              <div className="relative flex-1">
+                <LayoutGrid className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
+                <select
+                  className="w-full pl-14 pr-4 py-5 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white rounded-2xl outline-none font-bold text-sm appearance-none cursor-pointer border-none focus:ring-2 focus:ring-orange-600/20 transition-all"
+                  value={filters.category}
+                  onChange={e => setFilters({ ...filters, category: e.target.value })}
+                >
+                  <option value="All">All Categories</option>
+                  <optgroup label="Tech & Engineering">
+                    <option value="Software Engineering">Software Engineering</option>
+                    <option value="Data Science">Data Science</option>
+                    <option value="Cyber Security">Cyber Security</option>
+                    <option value="AI & Machine Learning">AI & Machine Learning</option>
+                    <option value="Robotics">Robotics</option>
+                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                    <option value="Civil Engineering">Civil Engineering</option>
+                    <option value="Electrical Engineering">Electrical Engineering</option>
+                    <option value="Chemical Engineering">Chemical Engineering</option>
+                  </optgroup>
+                  <optgroup label="Business & Finance">
+                    <option value="Business Administration">Business Administration</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Accounting">Accounting</option>
+                    <option value="Economics">Economics</option>
+                    <option value="Human Resources">Human Resources</option>
+                    <option value="Supply Chain">Supply Chain</option>
+                    <option value="Entrepreneurship">Entrepreneurship</option>
+                  </optgroup>
+                  <optgroup label="Creative & Media">
+                    <option value="Graphic Design">Graphic Design</option>
+                    <option value="UI/UX Design">UI/UX Design</option>
+                    <option value="Interior Design">Interior Design</option>
+                    <option value="Fashion Design">Fashion Design</option>
+                    <option value="Photography">Photography</option>
+                    <option value="Film & Media">Film & Media</option>
+                    <option value="Journalism">Journalism</option>
+                    <option value="Content Writing">Content Writing</option>
+                  </optgroup>
+                  <optgroup label="Healthcare & Science">
+                    <option value="Medicine">Medicine</option>
+                    <option value="Pharmacy">Pharmacy</option>
+                    <option value="Nursing">Nursing</option>
+                    <option value="Public Health">Public Health</option>
+                    <option value="Biology">Biology</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Physics">Physics</option>
+                    <option value="Environmental Science">Environmental Science</option>
+                  </optgroup>
+                  <optgroup label="Law & Social Sciences">
+                    <option value="Law">Law</option>
+                    <option value="International Relations">International Relations</option>
+                    <option value="Psychology">Psychology</option>
+                    <option value="Sociology">Sociology</option>
+                    <option value="Political Science">Political Science</option>
+                    <option value="Education">Education</option>
+                  </optgroup>
+                  <optgroup label="Marketing & Communication">
+                    <option value="Digital Marketing">Digital Marketing</option>
+                    <option value="Public Relations">Public Relations</option>
+                    <option value="Sales">Sales</option>
+                    <option value="Event Management">Event Management</option>
+                  </optgroup>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div className="relative flex-1">
+                <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
+                <input
+                  placeholder="Location..."
+                  className="w-full pl-14 pr-4 py-5 bg-zinc-100 dark:bg-white/5 rounded-2xl outline-none font-bold text-sm"
+                  value={filters.location}
+                  onChange={e => setFilters({ ...filters, location: e.target.value })}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Filter Toggles */}
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+            <div className="flex flex-wrap gap-2">
+              {['All', 'Remote', 'Onsite', 'Hybrid'].map(t => (
+                <button
+                  key={t}
+                  onClick={() => setFilters({ ...filters, type: t })}
+                  className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filters.type === t
+                    ? 'bg-[#FF6B00] text-white'
+                    : 'bg-zinc-100 dark:bg-white/5 text-zinc-500 hover:bg-zinc-200'
+                    }`}
+                >
+                  {t}
+                </button>
+              ))}
+              <button
+                onClick={() => setFilters({ ...filters, paid: !filters.paid })}
+                className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-all ${filters.paid
+                  ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600'
+                  : 'border-transparent bg-zinc-100 dark:bg-white/5 text-zinc-500'
+                  }`}
+              >
+                <DollarSign size={12} className="inline mr-1" />
+                {filters.paid ? 'Paid Only' : 'Pay: Any'}
+              </button>
+            </div>
+
+            {(searchQuery || filters.type !== 'All' || filters.paid || filters.location) && (
+              <button
+                onClick={resetFilters}
+                className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-500 hover:opacity-70"
+              >
+                <X size={14} /> Clear Filters
               </button>
             )}
           </div>
-
-          <div className="relative flex-1 md:max-w-xs">
-            <LayoutGrid className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
-            <select
-              className="w-full pl-14 pr-8 py-4 bg-transparent rounded-2xl border border-slate-300/50 dark:border-slate-600/50 focus:border-orange-500 dark:focus:border-orange-400 outline-none text-slate-900 dark:text-slate-100 appearance-none transition-all cursor-pointer"
-              value={filters.category}
-              onChange={e => setFilters({ ...filters, category: e.target.value })}
-            >
-              <option value="All" className="dark:bg-slate-900">All Categories</option>
-              <option value="Software Engineering" className="dark:bg-slate-900">Software Engineering</option>
-              <option value="Data Science" className="dark:bg-slate-900">Data Science</option>
-              <option value="Design" className="dark:bg-slate-900">Design</option>
-              <option value="Marketing" className="dark:bg-slate-900">Marketing</option>
-              <option value="Business / Finance" className="dark:bg-slate-900">Business / Finance</option>
-              <option value="Content / Media" className="dark:bg-slate-900">Content / Media</option>
-              <option value="Other" className="dark:bg-slate-900">Other</option>
-            </select>
-          </div>
-
-          <div className="relative flex-1 md:max-w-xs">
-            <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
-            <input
-              placeholder="Location or Remote..."
-              className="w-full pl-14 py-4 bg-transparent rounded-2xl border border-slate-300/50 dark:border-slate-600/50 focus:border-orange-500 dark:focus:border-orange-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all"
-              value={filters.location}
-              onChange={e => setFilters({ ...filters, location: e.target.value })}
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-3 items-center">
-            <div className={`px-6 py-3 rounded-2xl backdrop-blur-xl border text-sm font-semibold cursor-pointer transition-all ${filters.type === 'All'
-                ? 'bg-orange-600 text-white border-orange-600 dark:bg-orange-700 dark:border-orange-700'
-                : 'bg-white/40 dark:bg-slate-800/40 border-slate-300/50 dark:border-slate-600/50 hover:border-orange-400/50 dark:hover:border-orange-500/50 text-slate-700 dark:text-slate-300'
-              }`} onClick={() => setFilters({ ...filters, type: 'All' })}>
-              All Types
-            </div>
-
-            {['Remote', 'Onsite', 'Hybrid'].map(t => (
-              <div
-                key={t}
-                className={`px-6 py-3 rounded-2xl backdrop-blur-xl border text-sm font-semibold cursor-pointer transition-all ${filters.type === t
-                    ? 'bg-orange-600 text-white border-orange-600 dark:bg-orange-700 dark:border-orange-700'
-                    : 'bg-white/40 dark:bg-slate-800/40 border-slate-300/50 dark:border-slate-600/50 hover:border-orange-400/50 dark:hover:border-orange-500/50 text-slate-700 dark:text-slate-300'
-                  }`} onClick={() => setFilters({ ...filters, type: t })}
-              >
-                {t}
-              </div>
-            ))}
-
-            <button
-              onClick={() => setFilters({ ...filters, paid: !filters.paid })}
-              className={`px-6 py-3 rounded-2xl text-sm font-semibold transition-all backdrop-blur-xl border ${filters.paid
-                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-600/20 dark:bg-emerald-700 dark:border-emerald-700'
-                  : 'bg-white/40 dark:bg-slate-800/40 border-slate-300/50 dark:border-slate-600/50 hover:border-emerald-400/50 dark:hover:border-emerald-500/50 text-slate-700 dark:text-slate-300'
-                }`}
-            >
-              <DollarSign size={16} className="inline mr-1" />
-              {filters.paid ? 'Paid Only' : 'All Roles'}
-            </button>
-          </div>
         </div>
 
-        {/* Grid Header */}
-        <div className="flex items-center gap-4 px-2">
-          <LayoutGrid size={18} className="text-orange-600 dark:text-orange-500" />
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-            Recommended <span className="text-orange-600 dark:text-orange-500">Picks</span>
+        {/* Section Title */}
+        <div className="flex items-center gap-4">
+          <h3 className="text-xl font-black uppercase tracking-tighter italic">
+            Available <span className="text-[#FF6B00]">Positions</span>
           </h3>
-          <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
-          <p className="text-sm text-slate-500 dark:text-slate-400">({filteredInternships.length} roles)</p>
+          <div className="flex-1 h-[2px] bg-zinc-100 dark:bg-white/5" />
+          <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">
+            Showing {filteredInternships.length} Results
+          </span>
         </div>
 
-        {/* Cards */}
+        {/* Internship Grid */}
         {filteredInternships.length === 0 ? (
-          <div className="py-24 text-center bg-white/30 dark:bg-slate-900/30 backdrop-blur-2xl border border-slate-200/50 dark:border-slate-700/40 rounded-3xl shadow-xl">
-            <SearchCode size={64} className="mx-auto mb-6 text-slate-300 dark:text-slate-600" />
-            <h3 className="text-2xl font-bold text-slate-700 dark:text-slate-300 mb-3">No opportunities found</h3>
-            <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-8">Try adjusting your search or filters.</p>
+          <div className="py-32 text-center bg-zinc-50 dark:bg-white/5 rounded-[3rem] border-2 border-dashed border-zinc-200 dark:border-white/10">
+            <div className="w-20 h-20 bg-zinc-100 dark:bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <SearchCode size={32} className="text-zinc-400" />
+            </div>
+            <h3 className="text-2xl font-black uppercase tracking-tight">Nothing matching your vibe</h3>
+            <p className="text-zinc-500 font-bold max-w-xs mx-auto mt-2">Try clearing your filters or searching for something broader.</p>
+            <button onClick={resetFilters} className="mt-8 px-8 py-3 bg-black dark:bg-white text-white dark:text-black rounded-xl font-black uppercase text-[10px] tracking-widest">
+              Reset Search
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredInternships.map((intern) => (
-              <div
-                key={intern.id}
-                className="group bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/40 rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
-              >
+              <div key={intern.id} className="relative group transition-all duration-500">
                 {intern.paid && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 bg-emerald-600 text-white text-xs font-bold uppercase px-5 py-1.5 rounded-full shadow-lg border-4 border-white dark:border-slate-900">
-                    Paid Opportunity
+                  <div className="absolute -top-3 left-6 z-30 bg-emerald-500 text-white text-[10px] font-black uppercase px-4 py-1.5 rounded-full shadow-xl flex items-center gap-1">
+                    <Zap size={10} fill="currentColor" /> Paid
                   </div>
                 )}
-                <InternshipCard internship={intern} />
+                <div className="hover:scale-[1.02] transition-transform duration-300">
+                  <InternshipCard internship={intern} />
+                </div>
               </div>
             ))}
           </div>

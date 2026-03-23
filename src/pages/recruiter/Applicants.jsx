@@ -57,11 +57,9 @@ function Applicants() {
 
     useEffect(() => {
         let result = applicants;
-
         if (statusFilter !== 'All') {
             result = result.filter(app => app.status?.toLowerCase() === statusFilter.toLowerCase());
         }
-
         if (searchTerm.trim()) {
             const q = searchTerm.toLowerCase();
             result = result.filter(app =>
@@ -69,21 +67,18 @@ function Applicants() {
                 app.internshipTitle?.toLowerCase().includes(q)
             );
         }
-
         setFilteredApplicants(result);
     }, [searchTerm, statusFilter, applicants]);
 
     const handleStatusUpdate = async (applicationId, newStatus) => {
         const result = await Swal.fire({
-            title: `Move to ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}?`,
-            text: "This will notify the student of their application progress.",
+            title: `Move to ${newStatus}?`,
+            text: "This will notify the student of their progress.",
             icon: 'info',
             showCancelButton: true,
             confirmButtonText: 'Confirm',
             confirmButtonColor: '#ea580c',
-            customClass: {
-                popup: 'backdrop-blur-2xl bg-white/40 dark:bg-slate-900/50 rounded-3xl border border-slate-200/40 dark:border-slate-700/40 shadow-2xl'
-            }
+            customClass: { popup: 'rounded-3xl dark:bg-slate-900 dark:text-white' }
         });
 
         if (!result.isConfirmed) return;
@@ -93,84 +88,62 @@ function Applicants() {
             setApplicants(prev => prev.map(app =>
                 app.id === applicationId ? { ...app, status: newStatus } : app
             ));
-            Swal.fire({
-                icon: 'success',
-                title: 'Status Updated',
-                timer: 1500,
-                showConfirmButton: false,
-                customClass: { popup: 'backdrop-blur-2xl bg-white/40 dark:bg-slate-900/50 rounded-3xl border border-slate-200/40 dark:border-slate-700/40 shadow-2xl' }
-            });
+            Swal.fire({ icon: 'success', title: 'Updated', timer: 1500, showConfirmButton: false });
         } catch (err) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Update Failed',
-                customClass: { popup: 'backdrop-blur-2xl bg-white/40 dark:bg-slate-900/50 rounded-3xl border border-slate-200/40 dark:border-slate-700/40 shadow-2xl' }
-            });
+            Swal.fire({ icon: 'error', title: 'Update Failed' });
         }
     };
 
     const handleViewProfile = async (studentId) => {
         setProfileLoading(true);
         setSelectedApplicant(null);
-
         try {
             const res = await api.get(`/student/profile/${studentId}`);
             setSelectedApplicant(res.data.student);
         } catch (err) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Failed to Load Profile',
-                customClass: { popup: 'backdrop-blur-2xl bg-white/40 dark:bg-slate-900/50 rounded-3xl border border-slate-200/40 dark:border-slate-700/40 shadow-2xl' }
-            });
+            Swal.fire({ icon: 'error', title: 'Failed to Load Profile' });
         } finally {
             setProfileLoading(false);
         }
     };
 
     const stats = [
-        { label: 'Total Pipeline', value: applicants.length, icon: <Users size={20} />, color: 'text-orange-600 dark:text-orange-400' },
-        { label: 'Pending', value: applicants.filter(a => a.status === 'pending').length, icon: <Hourglass size={20} />, color: 'text-amber-500' },
-        { label: 'Interviews', value: applicants.filter(a => a.status === 'interview').length, icon: <UserCheck size={20} />, color: 'text-purple-600 dark:text-purple-400' },
-        { label: 'Hired', value: applicants.filter(a => a.status === 'accepted').length, icon: <CheckSquare size={20} />, color: 'text-emerald-500' },
+        { label: 'Total', value: applicants.length, icon: <Users size={20} />, color: 'orange' },
+        { label: 'Pending', value: applicants.filter(a => a.status === 'pending').length, icon: <Hourglass size={20} />, color: 'amber' },
+        { label: 'Interviews', value: applicants.filter(a => a.status === 'interview').length, icon: <UserCheck size={20} />, color: 'purple' },
+        { label: 'Hired', value: applicants.filter(a => a.status === 'accepted').length, icon: <CheckSquare size={20} />, color: 'emerald' },
     ];
 
     return (
-        <div className="p-8 space-y-12">
-            {/* Header */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+        <div className="p-4 md:p-8 space-y-8 md:space-y-12 max-w-[1600px] mx-auto">
+            {/* Header & Search Area */}
+            <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6">
                 <div className="space-y-3">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-orange-600/10 dark:bg-orange-700/20 text-orange-700 dark:text-orange-300 rounded-full text-sm font-semibold">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded-full text-xs font-bold">
                         <Sparkles size={14} /> Talent Pipeline
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
-                        Applicant <span className="text-orange-600 dark:text-orange-500">Pipeline</span>
+                    <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+                        Applicant <span className="text-orange-600">Pipeline</span>
                     </h1>
-                    <p className="text-lg text-slate-600 dark:text-slate-400 font-medium">
-                        Review, shortlist, and move candidates through your hiring process.
+                    <p className="text-slate-500 dark:text-slate-400 font-medium max-w-md">
+                        Review and manage candidates through your hiring stages.
                     </p>
                 </div>
 
-                {/* Filters */}
-                <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="relative flex-1 min-w-[280px]">
-                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={20} />
+                <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
+                    <div className="relative flex-1 md:w-80">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                         <input
                             placeholder="Search name or role..."
-                            className="w-full pl-14 pr-12 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:border-orange-500 dark:focus:border-orange-400 outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all font-bold"
+                            className="w-full pl-11 pr-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-2 ring-orange-500/20 outline-none transition-all font-bold"
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                         />
-                        {searchTerm && (
-                            <button onClick={() => setSearchTerm('')} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
-                                <XCircle size={16} className="text-slate-500 dark:text-slate-400" />
-                            </button>
-                        )}
                     </div>
-
                     <select
                         value={statusFilter}
                         onChange={e => setStatusFilter(e.target.value)}
-                        className="px-6 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-700 dark:text-slate-300 focus:border-orange-500 dark:focus:border-orange-400 outline-none transition-all font-bold"
+                        className="px-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl outline-none font-bold"
                     >
                         <option value="All">All Statuses</option>
                         <option value="Pending">Pending</option>
@@ -182,153 +155,76 @@ function Applicants() {
                 </div>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {stats.map((stat, i) => (
-                    <div
-                        key={i}
-                        className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2rem] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-6 flex items-center gap-5 group"
-                    >
-                        <div className={`p-4 rounded-2xl ${stat.color === 'text-orange-600 dark:text-orange-400' ? 'bg-orange-600/10 dark:bg-orange-700/20' : stat.color.replace('text-', 'bg-').replace('-500', '-500/10 dark:bg-') + '/20 dark:bg-' + stat.color.replace('text-', '').replace('-500', '-900/20')}`}>
+                    <div key={i} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-5 flex items-center gap-4 shadow-sm">
+                        <div className={`p-3 rounded-xl bg-${stat.color}-500/10 text-${stat.color}-600`}>
                             {stat.icon}
                         </div>
                         <div>
-                            <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">
-                                {stat.label}
-                            </p>
-                            <p className="text-3xl font-black text-slate-900 dark:text-white">
-                                {stat.value}
-                            </p>
+                            <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">{stat.label}</p>
+                            <p className="text-2xl font-black dark:text-white">{stat.value}</p>
                         </div>
                     </div>
                 ))}
             </div>
 
-            {/* Applicants List */}
+            {/* Content Area */}
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-32 gap-6">
-                    <div className="w-16 h-16 border-4 border-orange-200 dark:border-slate-700 border-t-orange-600 dark:border-t-orange-500 rounded-full animate-spin" />
-                    <p className="text-sm font-bold text-slate-500 dark:text-slate-400 animate-pulse">Loading talent pipeline...</p>
-                </div>
+                <div className="py-20 text-center animate-pulse font-bold text-slate-400">Loading pipeline...</div>
             ) : filteredApplicants.length === 0 ? (
-                <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-100 dark:border-slate-800 p-20 text-center">
-                    <Users size={64} className="mx-auto mb-6 text-slate-200 dark:text-slate-800" />
-                    <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-4">
-                        No applicants found
-                    </h2>
-                    <p className="text-slate-500 font-medium mb-8 max-w-xl mx-auto">
-                        Try adjusting your search or status filters, or check back later once more students apply.
-                    </p>
-                    <button
-                        onClick={() => { setSearchTerm(''); setStatusFilter('All'); }}
-                        className="inline-flex items-center gap-2 px-10 py-4 bg-orange-600 hover:bg-orange-700 text-white rounded-2xl font-black shadow-lg shadow-orange-600/20 transition-all"
-                    >
-                        Clear Filters
-                    </button>
+                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-[2.5rem] py-16 px-6 text-center border-2 border-dashed border-slate-200 dark:border-slate-800">
+                    <Users size={48} className="mx-auto mb-4 text-slate-300" />
+                    <h2 className="text-xl font-bold dark:text-white">No applicants match your criteria</h2>
+                    <button onClick={() => {setSearchTerm(''); setStatusFilter('All');}} className="mt-4 text-orange-600 font-bold">Clear filters</button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {filteredApplicants.map(app => (
-                        <div
-                            key={app.id}
-                            className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col group"
-                        >
-                            <div className="p-8 flex flex-col h-full">
-                                {/* Candidate */}
-                                <div className="flex items-center gap-4 mb-8">
-                                    <div className="w-16 h-16 rounded-2xl bg-slate-950 text-white flex items-center justify-center font-black text-xl group-hover:bg-orange-600 transition-colors">
-                                        {app.student?.name?.charAt(0) || '?'}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h3 className="font-black text-xl text-slate-900 dark:text-white truncate">
-                                            {app.student?.name || 'Applicant'}
-                                        </h3>
-                                        <p className="text-sm text-slate-500 font-bold flex items-center gap-2 truncate">
-                                            <Mail size={14} className="text-orange-600" /> {app.student?.email || '—'}
-                                        </p>
-                                    </div>
+                        <div key={app.id} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2rem] p-6 flex flex-col shadow-sm hover:shadow-md transition-shadow">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-12 h-12 rounded-xl bg-orange-600 text-white flex items-center justify-center font-black">
+                                    {app.student?.name?.charAt(0)}
                                 </div>
-
-                                {/* Details */}
-                                <div className="space-y-4 mb-8 flex-1">
-                                    <div className="flex items-center gap-3">
-                                        <Briefcase size={18} className="text-orange-600 flex-shrink-0" />
-                                        <p className="font-black text-slate-800 dark:text-slate-200 truncate">
-                                            {app.internshipTitle || 'Role'}
-                                        </p>
-                                    </div>
-
-                                    <div className="flex items-center gap-3">
-                                        <Calendar size={18} className="text-orange-600 flex-shrink-0" />
-                                        <p className="text-slate-500 dark:text-slate-400 font-bold text-sm">
-                                            Applied {new Date(app.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                                        </p>
-                                    </div>
-
-                                    <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${app.status === 'pending' ? 'bg-amber-500/10 text-amber-500' :
-                                            app.status === 'accepted' ? 'bg-emerald-500/10 text-emerald-500' :
-                                                app.status === 'rejected' ? 'bg-rose-500/10 text-rose-500' :
-                                                    'bg-slate-500/10 text-slate-500'
-                                        }`}>
-                                        {app.status === 'pending' && <Clock size={12} />}
-                                        {app.status === 'accepted' && <CheckCircle size={12} />}
-                                        {app.status === 'rejected' && <XCircle size={12} />}
-                                        {app.status || 'pending'}
-                                    </div>
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="font-bold text-slate-900 dark:text-white truncate">{app.student?.name}</h3>
+                                    <p className="text-xs text-slate-500 truncate">{app.student?.email}</p>
                                 </div>
+                            </div>
 
-                                {/* Actions Section */}
-                                <div className="flex items-center gap-3 pt-6 border-t border-slate-100 dark:border-slate-800">
-                                    <button
-                                        onClick={() => handleViewProfile(app.student_id)}
-                                        className="flex-1 px-5 py-4 bg-slate-950 text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-slate-900/20 active:scale-95 hover:bg-orange-600"
-                                    >
-                                        View Details
-                                    </button>
+                            <div className="space-y-3 mb-6 flex-1">
+                                <div className="flex items-center gap-2 text-sm font-medium dark:text-slate-300">
+                                    <Briefcase size={16} className="text-orange-600" />
+                                    <span className="truncate">{app.internshipTitle}</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-xs text-slate-500">
+                                    <Calendar size={16} />
+                                    {new Date(app.created_at).toLocaleDateString()}
+                                </div>
+                                <div className={`inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter 
+                                    ${app.status === 'accepted' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
+                                    {app.status || 'pending'}
+                                </div>
+                            </div>
 
-                                    <div className="dropdown dropdown-top dropdown-end">
-                                        <label
-                                            tabIndex={0}
-                                            className="p-4 bg-slate-50 dark:bg-slate-800 hover:bg-orange-600 hover:text-white rounded-2xl font-medium transition-all flex items-center justify-center cursor-pointer border border-slate-100 dark:border-slate-700"
-                                        >
-                                            <MoreVertical size={20} />
-                                        </label>
-
-                                        <ul
-                                            tabIndex={0}
-                                            className="dropdown-content z-[20] menu p-3 shadow-2xl bg-white dark:bg-slate-900 rounded-[2rem] w-64 border border-slate-100 dark:border-slate-800 mb-4"
-                                        >
-                                            <div className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 border-b border-slate-50 dark:border-slate-800">
-                                                Application Control
-                                            </div>
-
-                                            <li>
-                                                <button onClick={() => handleStatusUpdate(app.id, 'reviewed')} className="py-4 px-4 flex items-center gap-3 hover:bg-orange-600 hover:text-white rounded-xl text-slate-600 dark:text-slate-400 font-bold transition-colors">
-                                                    <CheckSquare size={18} /> Shortlist
-                                                </button>
-                                            </li>
-
-                                            <li>
-                                                <button onClick={() => handleStatusUpdate(app.id, 'interview')} className="py-4 px-4 flex items-center gap-3 hover:bg-orange-600 hover:text-white rounded-xl text-slate-600 dark:text-slate-400 font-bold transition-colors">
-                                                    <UserCheck size={18} /> Move to Interview
-                                                </button>
-                                            </li>
-
-                                            <div className="divider my-1 opacity-10"></div>
-
-                                            <li>
-                                                <button onClick={() => handleStatusUpdate(app.id, 'accepted')} className="py-4 px-4 flex items-center gap-3 hover:bg-emerald-500 hover:text-white rounded-xl text-emerald-600 font-black transition-colors">
-                                                    <CheckCircle size={18} /> Accept Candidate
-                                                </button>
-                                            </li>
-
-                                            <li>
-                                                <button onClick={() => handleStatusUpdate(app.id, 'rejected')} className="py-4 px-4 flex items-center gap-3 hover:bg-rose-500 hover:text-white rounded-xl text-rose-600 font-black transition-colors">
-                                                    <XCircle size={18} /> Reject
-                                                </button>
-                                            </li>
-                                        </ul>
-                                    </div>
+                            <div className="flex gap-2 pt-4 border-t border-slate-50 dark:border-slate-800">
+                                <button 
+                                    onClick={() => handleViewProfile(app.student_id)}
+                                    className="flex-1 py-3 bg-slate-900 dark:bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-orange-600 transition-colors"
+                                >
+                                    View Profile
+                                </button>
+                                
+                                <div className="dropdown dropdown-top dropdown-end">
+                                    <label tabIndex={0} className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl cursor-pointer block">
+                                        <MoreVertical size={18} />
+                                    </label>
+                                    <ul tabIndex={0} className="dropdown-content menu p-2 shadow-xl bg-white dark:bg-slate-800 rounded-xl w-48 border border-slate-100 dark:border-slate-700 mb-2">
+                                        <li><button onClick={() => handleStatusUpdate(app.id, 'interview')}>Interview</button></li>
+                                        <li><button onClick={() => handleStatusUpdate(app.id, 'accepted')} className="text-emerald-600">Accept</button></li>
+                                        <li><button onClick={() => handleStatusUpdate(app.id, 'rejected')} className="text-rose-600">Reject</button></li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -336,132 +232,59 @@ function Applicants() {
                 </div>
             )}
 
-            {/* Applicant Profile Modal */}
+            {/* Responsive Profile Modal */}
             {selectedApplicant && (
-                <div className="fixed inset-0 bg-slate-950/40 backdrop-blur-xl flex items-center justify-center z-50 p-6">
-                    <div className="bg-white dark:bg-slate-900 rounded-[3.5rem] shadow-2xl border border-white/20 max-w-4xl w-full max-h-[90vh] overflow-y-auto overflow-x-hidden relative">
-                        <button
+                <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-md flex items-center justify-center z-50 p-4 md:p-6">
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl relative">
+                        <button 
                             onClick={() => setSelectedApplicant(null)}
-                            className="absolute top-8 right-8 p-4 bg-slate-50 dark:bg-slate-800 hover:bg-orange-600 hover:text-white rounded-2xl transition-all z-20"
+                            className="absolute top-4 right-4 p-2 bg-slate-100 dark:bg-slate-800 rounded-full hover:bg-rose-500 hover:text-white transition-all"
                         >
-                            <XCircle size={24} />
+                            <XCircle size={20} />
                         </button>
 
-                        <div className="p-12 md:p-16 space-y-12">
-                            {/* Profile Header */}
-                            <div className="flex flex-col md:flex-row items-center md:items-start gap-10">
-                                <div className="w-40 h-40 rounded-[2.5rem] bg-orange-600 text-white flex items-center justify-center text-6xl font-black shadow-2xl shadow-orange-500/40 transform -rotate-3 hover:rotate-0 transition-transform">
-                                    {selectedApplicant.name?.charAt(0) || '?'}
+                        <div className="p-6 md:p-10 space-y-8">
+                            <div className="flex flex-col items-center text-center md:flex-row md:text-left gap-6">
+                                <div className="w-24 h-24 rounded-2xl bg-orange-600 text-white flex items-center justify-center text-4xl font-black shadow-xl">
+                                    {selectedApplicant.name?.charAt(0)}
                                 </div>
-                                <div className="text-center md:text-left space-y-4">
-                                    <h3 className="text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-                                        {selectedApplicant.name}
-                                    </h3>
-                                    <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                                        <p className="text-lg text-slate-500 font-bold flex items-center gap-3">
-                                            <Mail size={20} className="text-orange-600" /> {selectedApplicant.email}
-                                        </p>
-                                        {selectedApplicant.linkedin && (
-                                            <a
-                                                href={selectedApplicant.linkedin}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-lg text-orange-600 font-black hover:underline flex items-center gap-2"
-                                            >
-                                                <Linkedin size={20} /> LinkedIn
-                                            </a>
-                                        )}
+                                <div className="space-y-1">
+                                    <h3 className="text-2xl font-black dark:text-white">{selectedApplicant.name}</h3>
+                                    <p className="text-slate-500 flex items-center justify-center md:justify-start gap-2">
+                                        <Mail size={16} /> {selectedApplicant.email}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="grid gap-8">
+                                {selectedApplicant.bio && (
+                                    <div className="space-y-2">
+                                        <h4 className="text-sm font-black uppercase text-orange-600 tracking-widest">About</h4>
+                                        <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{selectedApplicant.bio}</p>
                                     </div>
-                                </div>
+                                )}
+
+                                {selectedApplicant.skills && (
+                                    <div className="space-y-3">
+                                        <h4 className="text-sm font-black uppercase text-orange-600 tracking-widest">Skills</h4>
+                                        <div className="flex flex-wrap gap-2">
+                                            {selectedApplicant.skills.split(',').map((skill, i) => (
+                                                <span key={i} className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs font-bold">
+                                                    {skill.trim()}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
-                            {/* Modal Grid */}
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                                <div className="lg:col-span-12 space-y-12">
-                                    {/* About */}
-                                    {selectedApplicant.bio && (
-                                        <div className="space-y-6">
-                                            <h4 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-                                                <FileText size={24} className="text-orange-600" /> Professional Summary
-                                            </h4>
-                                            <p className="text-slate-600 dark:text-slate-400 text-lg leading-relaxed font-medium">
-                                                {selectedApplicant.bio}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {/* Skills */}
-                                    {selectedApplicant.skills && (
-                                        <div className="space-y-6">
-                                            <h4 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-                                                <Zap size={24} className="text-orange-600" /> Core Competencies
-                                            </h4>
-                                            <div className="flex flex-wrap gap-3">
-                                                {selectedApplicant.skills.split(',').map((skill, i) => (
-                                                    <span
-                                                        key={i}
-                                                        className="px-6 py-3 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-2xl font-black text-sm border border-slate-100 dark:border-slate-700 group-hover:bg-orange-600 group-hover:text-white transition-all shadow-sm"
-                                                    >
-                                                        {skill.trim()}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Documents */}
-                                    {selectedApplicant.documents?.length > 0 && (
-                                        <div className="space-y-6">
-                                            <h4 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-                                                <FileText size={24} className="text-orange-600" /> Credentials & Documents
-                                            </h4>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                {selectedApplicant.documents.map(doc => (
-                                                    <a
-                                                        key={doc.id}
-                                                        href={`http://localhost:8000/storage/${doc.file_path}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex items-center justify-between p-6 bg-slate-50 dark:bg-slate-800 rounded-[2rem] hover:bg-orange-600 hover:text-white transition-all group border border-slate-100 dark:border-slate-700"
-                                                    >
-                                                        <div className="flex items-center gap-5 min-w-0">
-                                                            <div className="p-3 bg-white dark:bg-slate-950 rounded-xl group-hover:bg-white/20">
-                                                                <FileText size={24} className="text-orange-600 group-hover:text-white" />
-                                                            </div>
-                                                            <div className="min-w-0">
-                                                                <p className="font-black text-slate-900 dark:text-white group-hover:text-white truncate">
-                                                                    {doc.original_name}
-                                                                </p>
-                                                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest group-hover:text-white/80">
-                                                                    {doc.type.replace('_', ' ')}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                        <ExternalLink size={18} className="flex-shrink-0 opacity-40 group-hover:opacity-100" />
-                                                    </a>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Modal Footer */}
-                            <div className="pt-10 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-4 items-center justify-between">
-                                <button
-                                    onClick={() => setSelectedApplicant(null)}
-                                    className="px-10 py-5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl font-black text-sm hover:bg-slate-200 transition-all"
-                                >
-                                    Close Profile
+                            <div className="pt-6 border-t dark:border-slate-800 flex flex-col sm:flex-row gap-3">
+                                <a href={`mailto:${selectedApplicant.email}`} className="flex-1 py-4 bg-orange-600 text-white rounded-xl text-center font-black shadow-lg shadow-orange-600/20">
+                                    Contact Candidate
+                                </a>
+                                <button onClick={() => setSelectedApplicant(null)} className="flex-1 py-4 bg-slate-100 dark:bg-slate-800 rounded-xl font-bold">
+                                    Close
                                 </button>
-                                <div className="flex gap-4">
-                                    <a
-                                        href={`mailto:${selectedApplicant.email}`}
-                                        className="px-10 py-5 bg-slate-950 text-white rounded-2xl font-black text-sm shadow-xl shadow-slate-900/20 hover:bg-orange-600 transition-all flex items-center gap-3"
-                                    >
-                                        <Mail size={18} /> Send Message
-                                    </a>
-                                </div>
                             </div>
                         </div>
                     </div>

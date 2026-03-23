@@ -81,31 +81,31 @@ function Applications() {
       confirmButtonText: 'Close',
       buttonsStyling: false,
       customClass: {
-        popup: 'backdrop-blur-2xl bg-white/40 dark:bg-slate-900/50 border border-slate-200/40 dark:border-slate-700/40 rounded-3xl shadow-2xl overflow-hidden',
-        confirmButton: 'px-12 py-4 bg-slate-900 dark:bg-slate-700 text-white rounded-2xl font-semibold hover:scale-105 transition-all m-6'
+        popup: 'bg-slate-950 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden',
+        confirmButton: 'px-12 py-4 bg-orange-600 text-white rounded-2xl font-black hover:scale-105 transition-all m-6 tracking-widest uppercase text-xs'
       },
       html: `
-        <div class="text-left p-10 pb-6 dark:text-slate-100">
-          <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-2">${internship.title}</h2>
-          <p class="text-orange-600 dark:text-orange-400 font-bold text-xl mb-8">${internship.recruiter?.name ? internship.recruiter.name + (internship.recruiter.company_name ? ' • ' + internship.recruiter.company_name : '') : (internship.company?.company_name || 'Independent Recruiter')}</p>
+        <div class="text-left p-10 pb-6 text-slate-100">
+          <h2 class="text-4xl md:text-5xl font-black tracking-tighter mb-2 text-white">${internship.title}</h2>
+          <p class="text-orange-500 font-black text-xl mb-8">${internship.recruiter?.name ? internship.recruiter.name + (internship.recruiter.company_name ? ' • ' + internship.recruiter.company_name : '') : (internship.company?.company_name || 'Independent Recruiter')}</p>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-            <div class="p-5 bg-white/50 dark:bg-slate-800/40 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/40">
-              <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Location</p>
-              <p class="font-semibold">${internship.location || 'Remote'}</p>
+            <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800">
+              <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Location</p>
+              <p class="font-bold text-slate-200">${internship.location || 'Remote'}</p>
             </div>
-            <div class="p-5 bg-white/50 dark:bg-slate-800/40 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/40">
-              <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Stipend</p>
-              <p class="font-semibold">${internship.paid ? (internship.stipend || 'Paid') : 'Unpaid'}</p>
+            <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800">
+              <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Stipend</p>
+              <p class="font-bold text-slate-200">${internship.paid ? (internship.stipend || 'Paid') : 'Unpaid'}</p>
             </div>
-            <div class="p-5 bg-white/50 dark:bg-slate-800/40 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/40">
-              <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Type</p>
-              <p class="font-semibold">${internship.type || 'Standard'}</p>
+            <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800">
+              <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Type</p>
+              <p class="font-bold text-slate-200">${internship.type || 'Standard'}</p>
             </div>
           </div>
           <div class="space-y-6">
             <div>
-              <h4 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-3">Description</h4>
-              <p class="text-slate-700 dark:text-slate-300 leading-relaxed">${internship.description || 'No description available.'}</p>
+              <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3">Description</h4>
+              <p class="text-slate-300 leading-relaxed font-medium">${internship.description || 'No description available.'}</p>
             </div>
           </div>
         </div>`
@@ -148,8 +148,8 @@ function Applications() {
               <div
                 key={i}
                 className={`p-6 rounded-2xl backdrop-blur-xl border transition-all hover:-translate-y-1 hover:shadow-xl duration-300 ${i === 0
-                    ? 'bg-orange-600/10 dark:bg-orange-800/20 border-orange-500/30 dark:border-orange-600/30 text-orange-800 dark:text-orange-200'
-                    : 'bg-white/40 dark:bg-slate-800/40 border-slate-200/50 dark:border-slate-700/40 text-slate-900 dark:text-slate-100'
+                  ? 'bg-orange-600/10 dark:bg-orange-800/20 border-orange-500/30 dark:border-orange-600/30 text-orange-800 dark:text-orange-200'
+                  : 'bg-white/40 dark:bg-slate-800/40 border-slate-200/50 dark:border-slate-700/40 text-slate-900 dark:text-slate-100'
                   }`}
               >
                 <div className={`flex items-center gap-3 mb-3 ${stat.color}`}>
@@ -185,8 +185,8 @@ function Applications() {
                 key={s}
                 onClick={() => setStatusFilter(s)}
                 className={`px-6 py-3 rounded-2xl text-sm font-semibold transition-all backdrop-blur-xl border ${statusFilter === s
-                    ? 'bg-orange-600 text-white border-orange-600 shadow-lg shadow-orange-600/20 dark:bg-orange-700 dark:border-orange-700 dark:shadow-orange-700/20'
-                    : 'bg-white/40 dark:bg-slate-800/40 border-slate-300/50 dark:border-slate-600/50 hover:border-orange-400/50 dark:hover:border-orange-500/50 text-slate-700 dark:text-slate-300'
+                  ? 'bg-orange-600 text-white border-orange-600 shadow-lg shadow-orange-600/20 dark:bg-orange-700 dark:border-orange-700 dark:shadow-orange-700/20'
+                  : 'bg-white/40 dark:bg-slate-800/40 border-slate-300/50 dark:border-slate-600/50 hover:border-orange-400/50 dark:hover:border-orange-500/50 text-slate-700 dark:text-slate-300'
                   }`}
               >
                 {s.charAt(0).toUpperCase() + s.slice(1)}
@@ -258,9 +258,9 @@ function Applications() {
                     <div className="flex justify-end items-end gap-3">
                       <button
                         onClick={() => handleViewDetails(app.internship)}
-                        className="flex items-center gap-2 text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium transition-colors"
+                        className="flex items-center gap-2 text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-bold transition-all group/btn"
                       >
-                        View Details <ArrowRight size={16} />
+                        <span className="border-b-2 border-transparent group-hover/btn:border-current transition-all">View Details</span> <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
                       </button>
 
                       {app.status?.toLowerCase() === 'pending' && (

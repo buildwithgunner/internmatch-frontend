@@ -176,6 +176,21 @@ function ViewProfile() {
                   </div>
                 </div>
               </div>
+
+              {profile.profile?.interests && (
+                <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
+                    <Sparkles size={16} className="text-orange-600" /> Fields of Interest
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {profile.profile.interests.split(',').map(s => s.trim()).filter(Boolean).map((interest, i) => (
+                      <span key={i} className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-black uppercase tracking-widest rounded-xl border border-slate-200 dark:border-slate-700">
+                        {interest}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {skills.length > 0 && (

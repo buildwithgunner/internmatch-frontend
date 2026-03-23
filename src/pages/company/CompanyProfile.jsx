@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../services/api.js';
 import { UploadCloud, Trash2, Save, AlertCircle, Building2, Globe, Mail, Briefcase, FileText, Eye, Edit, CheckCircle2 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import Cropper from 'react-easy-crop';
 
 function CompanyProfile() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     company_name: '',
     website: '',
@@ -154,6 +156,41 @@ function CompanyProfile() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    const result = await Swal.fire({
+      title: 'Deactivate Company Profile?',
+      text: 'All your postings will be hidden. This can be reversed by an administrator.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#334155',
+      confirmButtonText: 'Yes, Deactivate',
+      background: '#0f172a',
+      color: '#fff',
+      customClass: { popup: 'rounded-3xl border border-slate-700/40 shadow-2xl backdrop-blur-2xl' }
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await api.delete('/company/account');
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        Swal.fire({
+          title: 'Deactivated',
+          text: 'Company account deactivated successfully.',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+          background: '#0f172a',
+          color: '#fff'
+        });
+        setTimeout(() => navigate('/login'), 2000);
+      } catch (err) {
+        Swal.fire('Error', 'Failed to deactivate account.', 'error');
+      }
+    }
+  };
+
   // Profile completeness calculation
   const calculateCompleteness = () => {
     let score = 0;
@@ -168,9 +205,9 @@ function CompanyProfile() {
   const completeness = calculateCompleteness();
   const isComplete = completeness === 100;
 
-  const logoUrl = previewLogo || 
-    (formData.logo_path ? `http://localhost:8000/storage/${formData.logo_path}` : 
-    "https://img.freepik.com/free-vector/bird-colorful-logo-gradient-designs_343694-2506.jpg");
+  const logoUrl = previewLogo ||
+    (formData.logo_path ? `http://localhost:8000/storage/${formData.logo_path}` :
+      "https://img.freepik.com/free-vector/bird-colorful-logo-gradient-designs_343694-2506.jpg");
 
   if (loading) {
     return (
@@ -444,7 +481,6 @@ function CompanyProfile() {
           </div>
         )}
 
-        {/* Danger Zone */}
         <div className="bg-white/50 dark:bg-slate-900/40 backdrop-blur-2xl border border-rose-300/50 dark:border-rose-800/40 rounded-3xl shadow-2xl overflow-hidden">
           <div className="p-8 md:p-10 flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="space-y-2 text-center md:text-left">
@@ -452,11 +488,14 @@ function CompanyProfile() {
                 <AlertCircle size={24} /> Danger Zone
               </h3>
               <p className="text-slate-600 dark:text-slate-400">
-                Deleting your company profile is permanent and cannot be undone.
+                Deactivate your company account. Your profile and internships will be hidden.
               </p>
             </div>
-            <button className="px-8 py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-semibold shadow-lg shadow-rose-600/20 transition-all">
-              Delete Company Profile
+            <button
+              onClick={handleDeleteAccount}
+              className="px-8 py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-semibold shadow-lg shadow-rose-600/20 transition-all"
+            >
+              Deactivate Account
             </button>
           </div>
         </div>

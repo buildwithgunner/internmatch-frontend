@@ -29,6 +29,8 @@ function PostInternship({ mode = 'company' }) {
     description: '',
     requirements: '',
     deadline: '',
+    target_faculty: '',
+    target_department: '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -52,6 +54,8 @@ function PostInternship({ mode = 'company' }) {
             description: data.description || '',
             requirements: data.requirements || '',
             deadline: data.deadline ? new Date(data.deadline).toISOString().split('T')[0] : '',
+            target_faculty: data.target_faculty || '',
+            target_department: data.target_department || '',
           });
         } catch (err) {
           setError('Failed to load internship details.');
@@ -102,6 +106,8 @@ function PostInternship({ mode = 'company' }) {
         description: formData.description.trim(),
         requirements: formData.requirements.trim(),
         deadline: formData.deadline || null,
+        target_faculty: formData.target_faculty.trim(),
+        target_department: formData.target_department.trim(),
       };
 
       if (isEditing) {
@@ -208,16 +214,90 @@ function PostInternship({ mode = 'company' }) {
                   onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
                   options={[
                     { value: '', label: 'Select category' },
+                    // Tech & Engineering
                     { value: 'Software Engineering', label: 'Software Engineering' },
                     { value: 'Data Science', label: 'Data Science' },
-                    { value: 'Design', label: 'Design' },
-                    { value: 'Marketing', label: 'Marketing' },
-                    { value: 'Business / Finance', label: 'Business / Finance' },
-                    { value: 'Content / Media', label: 'Content / Media' },
+                    { value: 'Cyber Security', label: 'Cyber Security' },
+                    { value: 'AI & Machine Learning', label: 'AI & Machine Learning' },
+                    { value: 'Robotics', label: 'Robotics' },
+                    { value: 'Mechanical Engineering', label: 'Mechanical Engineering' },
+                    { value: 'Civil Engineering', label: 'Civil Engineering' },
+                    { value: 'Electrical Engineering', label: 'Electrical Engineering' },
+                    { value: 'Chemical Engineering', label: 'Chemical Engineering' },
+
+                    // Business & Finance
+                    { value: 'Business Administration', label: 'Business Administration' },
+                    { value: 'Finance', label: 'Finance' },
+                    { value: 'Accounting', label: 'Accounting' },
+                    { value: 'Economics', label: 'Economics' },
+                    { value: 'Human Resources', label: 'Human Resources' },
+                    { value: 'Supply Chain', label: 'Supply Chain' },
+                    { value: 'Entrepreneurship', label: 'Entrepreneurship' },
+
+                    // Creative & Media
+                    { value: 'Graphic Design', label: 'Graphic Design' },
+                    { value: 'UI/UX Design', label: 'UI/UX Design' },
+                    { value: 'Interior Design', label: 'Interior Design' },
+                    { value: 'Fashion Design', label: 'Fashion Design' },
+                    { value: 'Photography', label: 'Photography' },
+                    { value: 'Film & Media', label: 'Film & Media' },
+                    { value: 'Journalism', label: 'Journalism' },
+                    { value: 'Content Writing', label: 'Content Writing' },
+
+                    // Healthcare & Science
+                    { value: 'Medicine', label: 'Medicine' },
+                    { value: 'Pharmacy', label: 'Pharmacy' },
+                    { value: 'Nursing', label: 'Nursing' },
+                    { value: 'Public Health', label: 'Public Health' },
+                    { value: 'Biology', label: 'Biology' },
+                    { value: 'Chemistry', label: 'Chemistry' },
+                    { value: 'Physics', label: 'Physics' },
+                    { value: 'Environmental Science', label: 'Environmental Science' },
+
+                    // Law & Social Sciences
+                    { value: 'Law', label: 'Law' },
+                    { value: 'International Relations', label: 'International Relations' },
+                    { value: 'Psychology', label: 'Psychology' },
+                    { value: 'Sociology', label: 'Sociology' },
+                    { value: 'Political Science', label: 'Political Science' },
+                    { value: 'Education', label: 'Education' },
+
+                    // Marketing & Communication
+                    { value: 'Digital Marketing', label: 'Digital Marketing' },
+                    { value: 'Public Relations', label: 'Public Relations' },
+                    { value: 'Sales', label: 'Sales' },
+                    { value: 'Event Management', label: 'Event Management' },
+
                     { value: 'Other', label: 'Other' },
                   ]}
                   required
                 />
+
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles size={18} className="text-orange-600 dark:text-orange-500" />
+                    <h3 className="text-sm font-black uppercase tracking-widest text-slate-400">Target Audience (Faculties)</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Input
+                      label="Target Faculty"
+                      name="target_faculty"
+                      value={formData.target_faculty}
+                      onChange={(e) => setFormData(prev => ({ ...prev, target_faculty: e.target.value }))}
+                      placeholder="e.g. Engineering, Science"
+                      helperText="Specify specific faculties you want to target."
+                    />
+                    <Input
+                      label="Target Department"
+                      name="target_department"
+                      value={formData.target_department}
+                      onChange={(e) => setFormData(prev => ({ ...prev, target_department: e.target.value }))}
+                      placeholder="e.g. Computer Science, Mechanical Eng"
+                      helperText="Narrow down to specific departments."
+                    />
+                  </div>
+                  <p className="text-[11px] text-slate-500 italic">Targeting specific faculties helps our algorithm connect you with the most qualified students for this role.</p>
+                </div>
               </div>
             </div>
 

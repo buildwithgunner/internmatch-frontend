@@ -5,9 +5,10 @@ import {
   UploadCloud, CheckCircle2, Image as ImageIcon,
   ArrowLeft, Save, Sparkles, ShieldCheck, GraduationCap,
   IdCard, FileCheck, Globe, Github, Info, MapPin,
-  Clock, Target, ListChecks
+  Clock, Target, ListChecks, Trash2
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { useNavigate } from 'react-router-dom';
 import api from '../../services/api.js';
 import Input from "../../components/ui/Input.jsx";
 import Textarea from "../../components/ui/Textarea.jsx";
@@ -15,19 +16,49 @@ import Button from "../../components/ui/Button.jsx";
 import Select from "../../components/ui/Select.jsx";
 import Swal from 'sweetalert2';
 
+const INTEREST_CATEGORIES = [
+  {
+    name: 'Tech & Engineering',
+    fields: ['Software Engineering', 'Data Science', 'Cyber Security', 'AI & Machine Learning', 'Robotics', 'Mechanical Engineering', 'Civil Engineering', 'Electrical Engineering', 'Chemical Engineering']
+  },
+  {
+    name: 'Business & Finance',
+    fields: ['Business Administration', 'Finance', 'Accounting', 'Economics', 'Human Resources', 'Supply Chain', 'Entrepreneurship']
+  },
+  {
+    name: 'Creative & Media',
+    fields: ['Graphic Design', 'UI/UX Design', 'Interior Design', 'Fashion Design', 'Photography', 'Film & Media', 'Journalism', 'Content Writing']
+  },
+  {
+    name: 'Healthcare & Science',
+    fields: ['Medicine', 'Pharmacy', 'Nursing', 'Public Health', 'Biology', 'Chemistry', 'Physics', 'Environmental Science']
+  },
+  {
+    name: 'Law & Social Sciences',
+    fields: ['Law', 'International Relations', 'Psychology', 'Sociology', 'Political Science', 'Education']
+  },
+  {
+    name: 'Marketing & Communication',
+    fields: ['Digital Marketing', 'Public Relations', 'Sales', 'Event Management']
+  }
+];
+
 function EditProfile() {
+  const navigate = useNavigate();
   const { refreshUser } = useAuth();
   const [formData, setFormData] = useState({
     firstName: '', lastName: '', email: '', phone: '',
     university: '', faculty: '', department: '', level: '', graduation_year: '',
     bio: '', skills: '', country: '', state: '', city: '',
     linkedin_url: '', portfolio_url: '', github_url: '', website_url: '',
-    preferred_role: '', internship_type: 'Onsite', availability: 'Full-time'
+    preferred_role: '', internship_type: 'Onsite', availability: 'Full-time',
+    interests: ''
   });
   const [profileStrength, setProfileStrength] = useState({ percentage: 0, tasks: [] });
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(null);
+  const [countries, setCountries] = useState([]);
 
   const fetchProfile = async () => {
     try {
@@ -56,6 +87,7 @@ function EditProfile() {
         preferred_role: profile.preferred_role || '',
         internship_type: profile.internship_type || 'Onsite',
         availability: profile.availability || 'Full-time',
+        interests: profile.interests || '',
       });
       setProfileStrength(user.profile_strength || { percentage: 0, tasks: [] });
       setDocuments(user.documents || []);
@@ -66,7 +98,18 @@ function EditProfile() {
     }
   };
 
-  useEffect(() => { fetchProfile(); }, []);
+  useEffect(() => {
+    fetchProfile();
+    const fetchCountries = async () => {
+      try {
+        const res = await api.get('/countries');
+        setCountries(res.data);
+      } catch (err) {
+        console.error('Failed to fetch countries', err);
+      }
+    };
+    fetchCountries();
+  }, []);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -94,6 +137,7 @@ function EditProfile() {
         preferred_role: formData.preferred_role,
         internship_type: formData.internship_type,
         availability: formData.availability,
+        interests: formData.interests,
       });
       Swal.fire({
         icon: 'success',
@@ -144,6 +188,41 @@ function EditProfile() {
       });
     } finally {
       setUploading(null);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const result = await Swal.fire({
+      title: 'Deactivate Your Account?',
+      text: 'Your profile and applications will be hidden from recruiters. You can contact an admin if you wish to restore it.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#334155',
+      confirmButtonText: 'Yes, Deactivate',
+      background: '#0f172a',
+      color: '#fff',
+      customClass: { popup: 'rounded-3xl border border-slate-700/40 shadow-2xl backdrop-blur-2xl' }
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await api.delete('/student/account');
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        Swal.fire({
+          title: 'Deactivated',
+          text: 'Account deactivated. We hope to see you back!',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+          background: '#0f172a',
+          color: '#fff'
+        });
+        setTimeout(() => navigate('/login'), 2000);
+      } catch (err) {
+        Swal.fire('Error', 'Failed to deactivate account.', 'error');
+      }
     }
   };
 
@@ -294,7 +373,14 @@ function EditProfile() {
               </div>
               <div className="p-8 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Input label="Country" name="country" value={formData.country} onChange={handleChange} placeholder="Nigeria" required />
+                  <Select
+                    label="Country"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    required
+                    options={countries.map(c => ({ value: c, label: c }))}
+                  />
                   <Input label="State" name="state" value={formData.state} onChange={handleChange} placeholder="Lagos" required />
                   <Input label="City" name="city" value={formData.city} onChange={handleChange} placeholder="Yaba" />
                 </div>
@@ -335,6 +421,49 @@ function EditProfile() {
                       { value: 'Part-time', label: 'Part-time' },
                     ]}
                   />
+                </div>
+
+                <div className="space-y-4 pt-6 border-t border-slate-200/50 dark:border-slate-700/40">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Sparkles size={16} className="text-orange-600 dark:text-orange-500" />
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-[0.2em]">Fields of Interest</label>
+                  </div>
+                  <div className="space-y-8">
+                    {INTEREST_CATEGORIES.map(category => (
+                      <div key={category.name} className="space-y-3">
+                        <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1 border-l-2 border-orange-600/30 pl-3">
+                          {category.name}
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {category.fields.map(field => {
+                            const isSelected = formData.interests?.split(',').map(s => s.trim()).includes(field);
+                            return (
+                              <button
+                                key={field}
+                                type="button"
+                                onClick={() => {
+                                  const current = formData.interests ? formData.interests.split(',').map(s => s.trim()).filter(Boolean) : [];
+                                  const updated = current.includes(field)
+                                    ? current.filter(f => f !== field)
+                                    : [...current, field];
+                                  setFormData({ ...formData, interests: updated.join(', ') });
+                                }}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${isSelected
+                                  ? 'bg-orange-600 text-white border-orange-600 shadow-lg shadow-orange-600/20 scale-105'
+                                  : 'bg-white/40 dark:bg-slate-800/40 text-slate-500 dark:text-slate-400 border-slate-200/50 dark:border-slate-700/40 hover:border-orange-400 dark:hover:border-orange-500'
+                                  }`}
+                              >
+                                {field}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-500 font-bold italic flex items-center gap-2 mt-4 opacity-80 decoration-orange-600/30 underline decoration-2">
+                    <Info size={12} /> These fields power our recommendation engine to find your perfect match.
+                  </p>
                 </div>
               </div>
             </div>
@@ -382,6 +511,32 @@ function EditProfile() {
               >
                 <Save size={20} /> Save Changes
               </Button>
+            </div>
+
+            {/* Danger Zone */}
+            <div className="mt-12 bg-rose-500/5 dark:bg-rose-500/10 border-2 border-dashed border-rose-500/20 rounded-3xl p-8 space-y-6">
+              <div className="flex items-center gap-4 text-rose-600 dark:text-rose-400">
+                <div className="p-3 bg-rose-500/10 rounded-xl">
+                  <Trash2 size={24} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold uppercase tracking-wider">Danger Zone</h3>
+                  <p className="text-sm font-medium opacity-70">Irreversible account actions</p>
+                </div>
+              </div>
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                <p className="text-sm text-slate-600 dark:text-slate-400 max-w-md font-medium">
+                  Deactivating your account will hide your profile from all recruiters and cancel
+                  your active applications. This can be reversed by an administrator.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleDeleteAccount}
+                  className="w-full md:w-auto px-8 py-3 bg-white dark:bg-slate-900 text-rose-600 border border-rose-500/20 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-rose-600 hover:text-white transition-all shadow-sm"
+                >
+                  Deactivate My Account
+                </button>
+              </div>
             </div>
           </div>
 

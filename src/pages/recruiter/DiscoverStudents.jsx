@@ -29,6 +29,9 @@ const DiscoverStudents = () => {
         graduation_year: ''
     });
     const [selectedStudent, setSelectedStudent] = useState(null);
+    const [myInternships, setMyInternships] = useState([]);
+    const [targetInternshipId, setTargetInternshipId] = useState('');
+    const [isRecommendedMode, setIsRecommendedMode] = useState(false);
 
     const fetchStudents = async () => {
         setLoading(true);
@@ -41,6 +44,7 @@ const DiscoverStudents = () => {
 
             const res = await api.get(`/recruiter/discover/students?${params.toString()}`);
             setStudents(res.data.data || []);
+            setIsRecommendedMode(false);
         } catch (err) {
             console.error('Failed to discover students', err);
         } finally {
@@ -48,13 +52,43 @@ const DiscoverStudents = () => {
         }
     };
 
-    useEffect(() => {
-        const delayDebounceFn = setTimeout(() => {
-            fetchStudents();
-        }, 500);
+    const fetchRecommendedStudents = async (id) => {
+        if (!id) return;
+        setLoading(true);
+        try {
+            const res = await api.get(`/recruiter/internships/${id}/recommended-students`);
+            setStudents(res.data.students || []);
+            setIsRecommendedMode(true);
+        } catch (err) {
+            console.error('Failed to fetch recommended students', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        return () => clearTimeout(delayDebounceFn);
-    }, [searchQuery, filters]);
+    const fetchMyInternships = async () => {
+        try {
+            const res = await api.get('/recruiter/my-internships');
+            setMyInternships(res.data.postings || []);
+        } catch (err) {
+            console.error('Failed to fetch my internships', err);
+        }
+    };
+
+    useEffect(() => {
+        fetchMyInternships();
+    }, []);
+
+    useEffect(() => {
+        if (targetInternshipId) {
+            fetchRecommendedStudents(targetInternshipId);
+        } else {
+            const delayDebounceFn = setTimeout(() => {
+                fetchStudents();
+            }, 500);
+            return () => clearTimeout(delayDebounceFn);
+        }
+    }, [searchQuery, filters, targetInternshipId]);
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
@@ -126,8 +160,45 @@ const DiscoverStudents = () => {
                         placeholder="Search by name, bio, or skill..."
                         className="w-full pl-14 pr-8 py-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2rem] focus:border-orange-600 outline-none transition-all shadow-sm focus:shadow-xl font-bold text-slate-900 dark:text-white"
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setTargetInternshipId('');
+                        }}
                     />
+                </div>
+            </div>
+
+            {/* Smart Recommendation Banner */}
+            <div className="mb-12 bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-900 dark:to-black rounded-[3rem] p-8 md:p-12 border border-slate-800 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-orange-600/10 rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none" />
+                <div className="flex flex-col md:flex-row items-center justify-between gap-10 relative z-10">
+                    <div className="max-w-2xl space-y-4">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-orange-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-orange-600/20">
+                            <Zap size={10} className="fill-white" /> AI Matching Engine
+                        </div>
+                        <h2 className="text-3xl md:text-4xl font-black text-white leading-tight">
+                            Find the perfect <span className="text-orange-500">Academic Match</span> for your active internships.
+                        </h2>
+                        <p className="text-slate-400 font-medium text-lg italic">
+                            Select an internship to see students from your target faculty and department.
+                        </p>
+                    </div>
+
+                    <div className="w-full md:w-[350px] space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 px-2">Targeting Opportunity</label>
+                        <select
+                            className="w-full p-5 bg-white/5 dark:bg-slate-800/50 backdrop-blur-xl border border-white/10 dark:border-slate-700 rounded-2xl text-white font-bold text-sm outline-none focus:ring-2 focus:ring-orange-600 transition-all appearance-none cursor-pointer"
+                            value={targetInternshipId}
+                            onChange={(e) => setTargetInternshipId(e.target.value)}
+                        >
+                            <option value="" className="bg-slate-900">Select an active posting...</option>
+                            {myInternships.map(job => (
+                                <option key={job.id} value={job.id} className="bg-slate-900">
+                                    {job.title}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -160,7 +231,7 @@ const DiscoverStudents = () => {
                                 <input
                                     name="skills"
                                     type="text"
-                                    placeholder="e.g. React, Python"
+                                    placeholder=""
                                     className="w-full p-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-orange-600 outline-none transition-all font-bold text-sm"
                                     value={filters.skills}
                                     onChange={handleFilterChange}
@@ -199,61 +270,69 @@ const DiscoverStudents = () => {
                     {loading ? (
                         <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
                             <Loader2 className="animate-spin text-orange-600" size={48} />
-                            <p className="text-slate-400 font-bold animate-pulse">Scanning the ecosystem...</p>
+                            <p className="text-slate-400 font-bold animate-pulse">Running smart match algorithms...</p>
                         </div>
                     ) : students.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                            {students.map((student) => (
-                                <div
-                                    key={student.id}
-                                    className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-2xl hover:border-orange-600/30 transition-all group flex flex-col h-full cursor-pointer"
-                                    onClick={() => setSelectedStudent(student)}
-                                >
-                                    <div className="flex items-center gap-4 mb-8">
-                                        <div className="w-16 h-16 rounded-2xl bg-slate-950 text-white flex items-center justify-center font-black text-2xl group-hover:bg-orange-600 transition-colors shadow-lg shadow-slate-900/10 group-hover:shadow-orange-500/20">
-                                            {student.name.charAt(0)}
+                        <div className="space-y-8">
+                            {isRecommendedMode && (
+                                <div className="flex items-center gap-3 px-6 py-4 bg-orange-600/10 border border-orange-600/20 rounded-2xl text-orange-600 mb-8">
+                                    <Zap size={20} className="fill-orange-600" />
+                                    <span className="font-black text-sm uppercase tracking-widest">Recommended Matches Found</span>
+                                </div>
+                            )}
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                {students.map((student) => (
+                                    <div
+                                        key={student.id}
+                                        className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-2xl hover:border-orange-600/30 transition-all group flex flex-col h-full cursor-pointer"
+                                        onClick={() => setSelectedStudent(student)}
+                                    >
+                                        <div className="flex items-center gap-4 mb-8">
+                                            <div className="w-16 h-16 rounded-2xl bg-slate-950 text-white flex items-center justify-center font-black text-2xl group-hover:bg-orange-600 transition-colors shadow-lg shadow-slate-900/10 group-hover:shadow-orange-500/20">
+                                                {student.name.charAt(0)}
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <div className="flex items-center justify-between">
+                                                    <h3 className="text-xl font-black text-slate-900 dark:text-white truncate transition-colors group-hover:text-orange-600">{student.name}</h3>
+                                                    {student.is_saved && (
+                                                        <Zap size={14} className="text-orange-600 fill-orange-600" />
+                                                    )}
+                                                </div>
+                                                <p className="text-slate-400 font-bold text-sm flex items-center gap-2 truncate">
+                                                    <GraduationCap size={14} className="text-orange-600" /> {student.profile?.university || 'Academic Institution'}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className="min-w-0 flex-1">
-                                            <div className="flex items-center justify-between">
-                                                <h3 className="text-xl font-black text-slate-900 dark:text-white truncate transition-colors group-hover:text-orange-600">{student.name}</h3>
-                                                {student.is_saved && (
-                                                    <Zap size={14} className="text-orange-600 fill-orange-600" />
+
+                                        <div className="space-y-4 mb-8 flex-1">
+                                            <div className="flex flex-wrap gap-2">
+                                                {student.profile?.skills?.split(',').slice(0, 3).map((skill, i) => (
+                                                    <span key={i} className="px-3 py-1 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                                        {skill.trim()}
+                                                    </span>
+                                                ))}
+                                                {(student.profile?.skills?.split(',').length > 3) && (
+                                                    <span className="px-3 py-1 bg-orange-600/10 text-orange-600 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                                        +{student.profile.skills.split(',').length - 3}
+                                                    </span>
                                                 )}
                                             </div>
-                                            <p className="text-slate-400 font-bold text-sm flex items-center gap-2 truncate">
-                                                <GraduationCap size={14} className="text-orange-600" /> {student.profile?.university || 'Academic Institution'}
+                                            <p className="text-slate-500 text-sm font-medium leading-relaxed line-clamp-3">
+                                                {student.profile?.bio || 'No bio provided.'}
                                             </p>
                                         </div>
-                                    </div>
 
-                                    <div className="space-y-4 mb-8 flex-1">
-                                        <div className="flex flex-wrap gap-2">
-                                            {student.profile?.skills?.split(',').slice(0, 3).map((skill, i) => (
-                                                <span key={i} className="px-3 py-1 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-lg text-[10px] font-black uppercase tracking-widest">
-                                                    {skill.trim()}
-                                                </span>
-                                            ))}
-                                            {(student.profile?.skills?.split(',').length > 3) && (
-                                                <span className="px-3 py-1 bg-orange-600/10 text-orange-600 rounded-lg text-[10px] font-black uppercase tracking-widest">
-                                                    +{student.profile.skills.split(',').length - 3}
-                                                </span>
-                                            )}
+                                        <div className="pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+                                            <div className="flex items-center gap-1 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                                Graduating <span className="text-slate-900 dark:text-white">{student.profile?.graduation_year || 'N/A'}</span>
+                                            </div>
+                                            <button className="p-3 bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 rounded-xl group-hover:bg-orange-600 group-hover:text-white transition-all transform group-hover:translate-x-1">
+                                                <ChevronRight size={18} />
+                                            </button>
                                         </div>
-                                        <p className="text-slate-500 text-sm font-medium leading-relaxed line-clamp-3">
-                                            {student.profile?.bio || 'No bio provided.'}
-                                        </p>
                                     </div>
-
-                                    <div className="pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
-                                        <div className="flex items-center gap-1 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                            Graduating <span className="text-slate-900 dark:text-white">{student.profile?.graduation_year || 'N/A'}</span>
-                                        </div>
-                                        <button className="p-3 bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 rounded-xl group-hover:bg-orange-600 group-hover:text-white transition-all transform group-hover:translate-x-1">
-                                            <ChevronRight size={18} />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     ) : (
                         <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-100 dark:border-slate-800 p-20 text-center">
@@ -392,8 +471,8 @@ const DiscoverStudents = () => {
                                             toggleSave(selectedStudent);
                                         }}
                                         className={`px-10 py-5 rounded-2xl font-black text-sm transition-all ${selectedStudent.is_saved
-                                                ? 'bg-orange-600 text-white shadow-xl shadow-orange-500/20'
-                                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                                            ? 'bg-orange-600 text-white shadow-xl shadow-orange-500/20'
+                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                                             }`}
                                     >
                                         {selectedStudent.is_saved ? 'Shortlisted' : 'Save for later'}

@@ -58,19 +58,19 @@ function AdminLayout() {
         <label htmlFor="admin-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
 
         <ul className="menu bg-neutral text-neutral-content min-h-full w-80 p-4 flex flex-col">
-            <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold">Admin Panel</h2>
-              <button 
-                onClick={toggleTheme} 
-                className="btn btn-ghost btn-circle btn-sm"
-                title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-              >
-                {theme === 'light' ? <MoonIcon className="h-5 w-5" /> : <SunIcon className="h-5 w-5" />}
-              </button>
-            </div>
-            <label htmlFor="admin-drawer" className="lg:hidden">
-              <XMarkIcon className="h-6 w-6" />
-            </label>
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-bold">Admin Panel</h2>
+            <button
+              onClick={toggleTheme}
+              className="btn btn-ghost btn-circle btn-sm"
+              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            >
+              {theme === 'light' ? <MoonIcon className="h-5 w-5" /> : <SunIcon className="h-5 w-5" />}
+            </button>
+          </div>
+          <label htmlFor="admin-drawer" className="lg:hidden">
+            <XMarkIcon className="h-6 w-6" />
+          </label>
 
           <div className="flex-1 space-y-2">
             <li>

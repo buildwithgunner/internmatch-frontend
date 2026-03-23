@@ -11,7 +11,7 @@ const Terms = () => {
                 <div className="flex items-center justify-between px-6 py-4 max-w-5xl mx-auto">
                     <Link to="/" className="text-xl font-black tracking-tighter flex items-center gap-2">
                         <span className="bg-[#FF6B00] text-white px-2 py-0.5 rounded-lg">IM</span>
-                        <span className="dark:text-white">INTERNMATCH</span>
+                        <span className="dark:text-white">InternMatch</span>
                     </Link>
                     <div className="flex items-center gap-4">
                         <ThemeToggle />
@@ -76,7 +76,7 @@ const Terms = () => {
             </main>
 
             <footer className="bg-gray-50 dark:bg-gray-900 py-12 px-6 border-t border-gray-100 dark:border-gray-800 text-center">
-                <p className="text-sm font-bold text-gray-400">© 2026 INTERNMATCH INC. BUILD RESPONSIBLY.</p>
+                <p className="text-sm font-bold text-gray-400">© 2026 InternMatch INC. BUILD RESPONSIBLY.</p>
             </footer>
         </div>
     );
