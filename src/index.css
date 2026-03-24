@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@plugin "daisyui";
+
+@plugin "daisyui/theme" {
+  name: "internmatch";
+  default: true;
+  color-scheme: light;
+
+  --color-primary: #f97316;
+  /* Orange-500 */
+  --color-primary-content: #ffffff;
+
+  --color-base-100: #ffffff;
+  /* White background */
+  --color-base-200: #f1f5f9;
+  /* Slate-100 */
+  --color-base-300: #e2e8f0;
+  /* Slate-200 */
+  --color-base-content: #0f172a;
+  /* Slate-900 text */
+
+  --color-neutral: #020617;
+  /* Slate-950 for sidebar/dark areas */
+  --color-neutral-content: #f8fafc;
+  /* Slate-50 text on neutral */
+}
+
+@plugin "daisyui/theme" {
+  name: "internmatch-dark";
+  color-scheme: dark;
+
+  --color-primary: #f97316;
+  --color-primary-content: #ffffff;
+
+  --color-base-100: #020617;
+  --color-base-200: #0f172a;
+  --color-base-300: #1e293b;
+  --color-base-content: #f8fafc;
+
+  --color-neutral: #000000;
+  --color-neutral-content: #ffffff;
+}
+
+/* Custom visible scrollbar for content area */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 12px;
+  /* thicker for visibility */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgb(148 163 184);
+  /* slate-400 - matches light theme */
+  border-radius: 6px;
+  border: 3px solid rgb(241 245 249);
+  /* slate-100 - padding effect */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(100 116 139);
+  /* slate-500 - darker on hover */
+}
+
+/* Firefox support */
+.custom-scrollbar {
+  scrollbar-width: auto;
+  scrollbar-color: rgb(148 163 184) transparent;
+}
