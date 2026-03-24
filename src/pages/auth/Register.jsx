@@ -5,7 +5,10 @@ import api from "../../services/api.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import Button from "../../components/ui/Button.jsx";
 
-function Register({ restrictedRole }) {
+/**
+ * @param {{ restrictedRole?: string | null }} props
+ */
+function Register({ restrictedRole = null }) {
   const [searchParams] = useSearchParams();
   const initialRole = restrictedRole || searchParams.get("role") || "student";
 

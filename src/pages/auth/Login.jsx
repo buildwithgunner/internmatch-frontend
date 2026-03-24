@@ -4,7 +4,10 @@ import { Eye, EyeOff, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
 import Button from "../../components/ui/Button.jsx";
 
-function Login({ restrictedRole }) {
+/**
+ * @param {{ restrictedRole?: string | null }} props
+ */
+function Login({ restrictedRole = null }) {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const initialRole = restrictedRole || searchParams.get('role') || location.state?.role || 'student';

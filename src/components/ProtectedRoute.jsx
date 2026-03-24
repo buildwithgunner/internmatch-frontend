@@ -1,6 +1,9 @@
 import { useAuth } from "../context/AuthContext.jsx";
 import { Navigate, useLocation } from "react-router-dom";
 
+/**
+ * @param {{ children: React.ReactNode, allowedRoles?: string[] }} props
+ */
 function ProtectedRoute({ children, allowedRoles = [] }) {
   const { user, role, loading } = useAuth();
   const location = useLocation();
