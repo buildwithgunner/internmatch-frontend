@@ -116,7 +116,7 @@ const Landing = () => {
                         {/* High-end Bento/Masonry Image Grid */}
                         <div className="relative h-[600px] w-full">
                             <div className="absolute top-0 right-0 w-[65%] h-[55%] rounded-3xl overflow-hidden shadow-2xl z-10 border border-white/20">
-                                <img src="https://images.unsplash.com/photo-1571260899304-425dea57a274?auto=format&fit=crop&q=80&w=1000" alt="Nigerian students studying" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=1000" alt="Nigerian students studying" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                             </div>
                             <div className="absolute bottom-10 left-0 w-[55%] h-[45%] rounded-3xl overflow-hidden shadow-2xl z-20 border border-white/20">
                                 <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&q=80&w=1000" alt="Young Black Professional" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
@@ -144,7 +144,7 @@ const Landing = () => {
                     <div className="flex flex-col lg:flex-row items-center gap-16">
                         <div className="flex-1 order-2 lg:order-1">
                             <div className="relative rounded-3xl overflow-hidden ring-1 ring-black/5 dark:ring-white/10">
-                                <img src="https://images.unsplash.com/photo-1531545514256-b1400bc00f31?auto=format&fit=crop&q=80&w=1600" alt="African students collaborating" className="w-full h-full object-cover" />
+                                <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=1600" alt="African students collaborating" className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                             </div>
                         </div>
