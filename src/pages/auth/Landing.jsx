@@ -44,7 +44,8 @@ const Landing = () => {
 
                     <div className="hidden lg:flex items-center gap-8 font-bold text-xs uppercase tracking-widest text-gray-600 dark:text-gray-400">
                         <Link to="/register?role=student" className="hover:text-[#FF6B00] transition-colors duration-200">For Students</Link>
-                        <Link to="/register?role=recruiter" className="hover:text-[#FF6B00] transition-colors duration-200">For Employers</Link>
+                        <Link to="/register?role=recruiter" className="hover:text-[#FF6B00] transition-colors duration-200">For Recruiters</Link>
+                        <Link to="/register?role=company" className="hover:text-[#FF6B00] transition-colors duration-200">For Companies</Link>
                         <div className="h-4 w-[1px] bg-gray-300 dark:bg-white/20" />
                         <Link to="/login" className="hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
                             Log In
@@ -67,7 +68,8 @@ const Landing = () => {
             {isMenuOpen && (
                 <div className="fixed inset-0 z-50 bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-3xl pt-24 px-6 flex flex-col gap-6 lg:hidden">
                     <Link to="/register?role=student" className="text-2xl font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/10 pb-4">For Students</Link>
-                    <Link to="/register?role=recruiter" className="text-2xl font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/10 pb-4">For Employers</Link>
+                    <Link to="/register?role=recruiter" className="text-2xl font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/10 pb-4">For Recruiters</Link>
+                    <Link to="/register?role=company" className="text-2xl font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/10 pb-4">For Companies</Link>
                     <Link to="/login" className="text-2xl font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/10 pb-4">Log In</Link>
                     <Link to="/register" className="text-2xl font-black uppercase tracking-tight text-[#FF6B00]">Get Started Today</Link>
                 </div>
@@ -94,7 +96,10 @@ const Landing = () => {
                                 JOIN AS A STUDENT <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                             </Link>
                             <Link to="/register?role=recruiter" className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white dark:bg-[#1A1A1A] text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 px-8 py-4 rounded-xl font-bold text-lg hover:border-gray-300 dark:hover:border-white/30 transition-all">
-                                HIRE TALENT
+                                RECRUITERS
+                            </Link>
+                            <Link to="/register?role=company" className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white dark:bg-[#1A1A1A] text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 px-8 py-4 rounded-xl font-bold text-lg hover:border-gray-300 dark:hover:border-white/30 transition-all">
+                                COMPANIES
                             </Link>
                         </div>
 
@@ -259,7 +264,8 @@ const Landing = () => {
                         <div className="flex flex-col gap-4">
                             <h4 className="font-black text-sm uppercase tracking-widest text-gray-900 dark:text-white">Product</h4>
                             <Link to="/register?role=student" className="text-gray-500 hover:text-[#FF6B00] font-medium transition-colors">For Students</Link>
-                            <Link to="/register?role=recruiter" className="text-gray-500 hover:text-[#FF6B00] font-medium transition-colors">For Employers</Link>
+                            <Link to="/register?role=recruiter" className="text-gray-500 hover:text-[#FF6B00] font-medium transition-colors">For Recruiters</Link>
+                            <Link to="/register?role=company" className="text-gray-500 hover:text-[#FF6B00] font-medium transition-colors">For Companies</Link>
                             <Link to="/pricing" className="text-gray-500 hover:text-[#FF6B00] font-medium transition-colors">Pricing</Link>
                         </div>
                         <div className="flex flex-col gap-4">
