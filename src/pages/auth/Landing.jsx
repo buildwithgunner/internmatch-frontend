@@ -105,8 +105,18 @@ const Landing = () => {
 
                         <div className="mt-12 flex items-center justify-center lg:justify-start gap-4">
                             <div className="flex -space-x-4">
-                                <img src="https://images.unsplash.com/photo-1589156191108-c7ea6bf7ea83?auto=format&fit=crop&w=100&h=100&q=80" alt="Student avatar" className="w-12 h-12 rounded-full border-2 border-white dark:border-[#0A0A0A] object-cover" />
-                                <img src="https://images.unsplash.com/photo-1531384441138-2736e62e0919?auto=format&fit=crop&w=100&h=100&q=80" alt="User" className="w-12 h-12 rounded-full border-2 border-white dark:border-[#0A0A0A] object-cover -mr-2" />
+                                <img
+                                    src="https://images.unsplash.com/photo-1531123897727-8f129e1638ce?auto=format&fit=crop&w=100&h=100&q=80"
+                                    alt="Student avatar 1"
+                                    className="w-12 h-12 rounded-full border-2 border-white dark:border-[#0A0A0A] object-cover bg-gray-200"
+                                    onError={(e) => { e.target.src = "https://ui-avatars.com/api/?name=S1&background=FF6B00&color=fff"; }}
+                                />
+                                <img
+                                    src="https://images.unsplash.com/photo-1531384441138-2736e62e0919?auto=format&fit=crop&w=100&h=100&q=80"
+                                    alt="Student avatar 2"
+                                    className="w-12 h-12 rounded-full border-2 border-white dark:border-[#0A0A0A] object-cover -mr-2 bg-gray-200"
+                                    onError={(e) => { e.target.src = "https://ui-avatars.com/api/?name=S2&background=333&color=fff"; }}
+                                />
                                 <div className="w-12 h-12 rounded-full border-2 border-white dark:border-[#0A0A0A] bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xs font-black text-gray-600 dark:text-gray-300 z-10">
                                     +5k
                                 </div>
