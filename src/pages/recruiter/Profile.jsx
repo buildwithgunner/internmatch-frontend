@@ -15,6 +15,8 @@ import {
     UploadCloud,
     FileText,
     ChevronDown,
+    ChevronRight,
+    Lock,
     Settings as SettingsIcon
 } from 'lucide-react';
 import api from '../../services/api.js';

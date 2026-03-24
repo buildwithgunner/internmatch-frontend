@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Search, Briefcase, Calendar, Bell } from 'lucide-react';
 import api from '../../services/api';
+import Swal from 'sweetalert2';
 
 const RecruiterDashboard = () => {
     const [stats, setStats] = useState({
@@ -48,7 +49,17 @@ const RecruiterDashboard = () => {
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
-                        <button className="p-3 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400">
+                        <button
+                            onClick={() => {
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Notifications',
+                                    text: 'You have no new notifications right now.',
+                                    confirmButtonColor: '#ea580c',
+                                });
+                            }}
+                            className="p-3 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                        >
                             <Bell size={20} />
                         </button>
                         <div className="w-12 h-12 rounded-2xl bg-orange-600 flex items-center justify-center text-white font-black">
