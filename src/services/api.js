@@ -1,12 +1,27 @@
 import axios from 'axios';
 
+const getBaseURL = () => {
+  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
+  
+  // If we are on a local network (e.g. 192.168.x.x), use the current hostname
+  // Guard for SSR/Build environments
+  if (typeof window !== 'undefined' && window.location) {
+    const { hostname, protocol } = window.location;
+    if (hostname !== 'localhost' && !hostname.includes('vercel.app')) {
+      return `${protocol}//${hostname}:8000/api/v1`;
+    }
+  }
+  
+  return 'http://localhost:8000/api/v1';
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1',
+  baseURL: getBaseURL(),
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
-  timeout: 15000, // 15s timeout for production resilience
+  timeout: 15000,
 });
 
 // ── Request Interceptor ──────────────────────────────────────────────────────

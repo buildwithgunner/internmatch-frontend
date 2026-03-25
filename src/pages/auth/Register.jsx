@@ -29,8 +29,11 @@ function Register({ restrictedRole = null }) {
   const [website, setWebsite] = useState("");
   const [country, setCountry] = useState("");
 
-  // Captcha & Countries State
-  const [countries, setCountries] = useState([]);
+  const [countries, setCountries] = useState([
+    "Nigeria", "United States", "United Kingdom", "Canada", "Ghana",
+    "South Africa", "Kenya", "Germany", "France", "India",
+    "Australia", "China", "Japan", "Brazil", "Egypt"
+  ]);
   const [captcha, setCaptcha] = useState({ question: "", captchaKey: "" });
   const [captchaAnswer, setCaptchaAnswer] = useState("");
 
@@ -75,17 +78,24 @@ function Register({ restrictedRole = null }) {
     const fetchData = async () => {
       try {
         const [countriesRes, captchaRes] = await Promise.all([
-          api.get("/countries"),
+          api.get("/countries").catch(() => null), // Silent fail for countries fallback
           api.get("/captcha")
         ]);
-        setCountries(countriesRes.data);
-        setCaptcha({
-          question: captchaRes.data.question,
-          captchaKey: captchaRes.data.captcha_key
-        });
+
+        if (countriesRes?.data && Array.isArray(countriesRes.data)) {
+          setCountries(countriesRes.data);
+        }
+
+        if (captchaRes?.data) {
+          setCaptcha({
+            question: captchaRes.data.question,
+            captchaKey: captchaRes.data.captcha_key
+          });
+        }
       } catch (err) {
         console.error("Failed to fetch initial data", err);
-        setError("Network error: Could not load country list. Please check your internet connection.");
+        // Don't set global error for captcha loading unless we want to block the form
+        // But for countries, we have the static list anyway.
       }
     };
     fetchData();
