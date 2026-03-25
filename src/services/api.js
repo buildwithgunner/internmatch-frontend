@@ -1,22 +1,32 @@
 import axios from 'axios';
 
 const getBaseURL = () => {
+  // 1. Check if an explicit API URL is provided via Environment Variables
   if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
   
-  // If we are on a local network (e.g. 192.168.x.x), use the current hostname
-  // Guard for SSR/Build environments
+  // 2. Handle Local Network testing (e.g., accessing via 192.168.x.x on mobile)
   if (typeof window !== 'undefined' && window.location) {
     const { hostname, protocol } = window.location;
-    if (hostname !== 'localhost' && !hostname.includes('vercel.app')) {
-      return `${protocol}//${hostname}:8000/api/v1`;
+    
+    // If we are NOT on localhost and NOT on a deployed vercel app, assume local network testing
+    if (hostname !== 'localhost' && !hostname.includes('vercel.app') && !hostname.includes('github.dev')) {
+      const localBackend = `${protocol}//${hostname}:8000/api/v1`;
+      console.log(`[API] Local Network Mode: Using ${localBackend}`);
+      return localBackend;
     }
   }
   
+  // 3. Last fallback (Standard Localhost)
   return 'http://localhost:8000/api/v1';
 };
 
+const baseURL = getBaseURL();
+if (import.meta.env.DEV) {
+  console.log(`[API] Initialized with BaseURL: ${baseURL}`);
+}
+
 const api = axios.create({
-  baseURL: getBaseURL(),
+  baseURL,
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
