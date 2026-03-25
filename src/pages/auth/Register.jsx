@@ -228,7 +228,8 @@ function Register({ restrictedRole = null }) {
                   <select
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
-                    className="w-full bg-slate-50 border-2 border-transparent rounded-2xl pl-14 pr-12 py-4 text-slate-900 focus:border-orange-500 focus:bg-white outline-none font-bold transition-all appearance-none"
+                    style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
+                    className="w-full bg-slate-50 border-2 border-transparent rounded-2xl pl-14 pr-12 py-4 text-slate-900 focus:border-orange-500 focus:bg-white outline-none font-bold transition-all"
                     required
                   >
                     {countries.length === 0 ? (
