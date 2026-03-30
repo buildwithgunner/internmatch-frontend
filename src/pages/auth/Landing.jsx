@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Briefcase,
     ArrowRight,
@@ -19,14 +19,39 @@ import {
     CheckCircle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useTheme } from '@/context/ThemeContext';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
+
+// Import local assets
+import heroStudent from '../../assets/hero_student.png';
+import heroRecruiter from '../../assets/hero_recruiter.png';
+import heroCompany from '../../assets/hero_company.png';
+import testimonialAvatar from '../../assets/testimonial_avatar.png';
 
 const Landing = () => {
-    const { isDark, toggleTheme } = useTheme();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
+    const containerRef = useRef(null);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            // Logic for scrolled state if needed, though HEAD didn't show a 'scrolled' variable usage in the nav in my previous view
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const toggleTheme = () => {
+        const newDark = !isDark;
+        setIsDark(newDark);
+        if (newDark) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    };
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#0A0A0A] font-sans text-gray-900 dark:text-gray-100 antialiased overflow-hidden selection:bg-[#FF6B00] selection:text-white">
+        <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#0A0A0A] font-sans text-gray-900 dark:text-gray-100 antialiased overflow-hidden selection:bg-[#FF6B00] selection:text-white transition-colors duration-300">
             {/* Background Accents */}
             <div className="fixed top-0 left-0 w-full h-[500px] bg-gradient-to-b from-[#FF6B00]/10 to-transparent pointer-events-none -z-10" />
             <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#FF6B00]/5 blur-[120px] pointer-events-none -z-10" />
@@ -62,18 +87,25 @@ const Landing = () => {
                         {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
                     </button>
                 </div>
-            </nav>
 
-            {/* Mobile Menu */}
-            {isMenuOpen && (
-                <div className="fixed inset-0 z-50 bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-3xl pt-24 px-6 flex flex-col gap-6 lg:hidden">
-                    <Link to="/register?role=student" className="text-2xl font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/10 pb-4">For Students</Link>
-                    <Link to="/register?role=recruiter" className="text-2xl font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/10 pb-4">For Recruiters</Link>
-                    <Link to="/register?role=company" className="text-2xl font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/10 pb-4">For Companies</Link>
-                    <Link to="/login" className="text-2xl font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/10 pb-4">Log In</Link>
-                    <Link to="/register" className="text-2xl font-black uppercase tracking-tight text-[#FF6B00]">Get Started Today</Link>
-                </div>
-            )}
+                {/* Mobile Menu */}
+                <AnimatePresence>
+                    {isMenuOpen && (
+                        <motion.div 
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="absolute top-full left-0 w-full bg-white dark:bg-[#0A0A0A] border-b border-gray-200 dark:border-white/10 px-6 pb-8 lg:hidden flex flex-col gap-6 overflow-hidden"
+                        >
+                            <Link to="/register?role=student" className="text-2xl font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/10 pb-4 mt-8">For Students</Link>
+                            <Link to="/register?role=recruiter" className="text-2xl font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/10 pb-4">For Recruiters</Link>
+                            <Link to="/register?role=company" className="text-2xl font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/10 pb-4">For Companies</Link>
+                            <Link to="/login" className="text-2xl font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/10 pb-4">Log In</Link>
+                            <Link to="/register" className="text-2xl font-black uppercase tracking-tight text-[#FF6B00]">Get Started Today</Link>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </nav>
 
             <main className="pt-[140px] lg:pt-[200px] pb-20 px-6 lg:px-12 max-w-[1400px] mx-auto min-h-screen">
                 {/* Hero Section */}
@@ -131,13 +163,13 @@ const Landing = () => {
                         {/* High-end Bento/Masonry Image Grid */}
                         <div className="relative h-[600px] w-full">
                             <div className="absolute top-0 right-0 w-[65%] h-[55%] rounded-3xl overflow-hidden shadow-2xl z-10 border border-white/20">
-                                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=1000" alt="Nigerian students studying" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                                <img src={heroStudent} alt="Nigerian students studying" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                             </div>
                             <div className="absolute bottom-10 left-0 w-[55%] h-[45%] rounded-3xl overflow-hidden shadow-2xl z-20 border border-white/20">
-                                <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&q=80&w=1000" alt="Young Black Professional" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                                <img src={heroRecruiter} alt="Young Black Professional" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                             </div>
                             <div className="absolute bottom-0 right-[5%] w-[45%] h-[35%] rounded-3xl overflow-hidden shadow-2xl z-30 border border-white/20">
-                                <img src="https://images.unsplash.com/photo-1551836022-b06985bceb24?auto=format&fit=crop&q=80&w=1000" alt="African team meeting" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                                <img src={heroCompany} alt="African team meeting" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                             </div>
                             {/* Floating UI Elements */}
                             <div className="absolute top-1/2 left-[-10%] z-40 bg-white dark:bg-[#1A1A1A] p-4 rounded-2xl shadow-xl flex items-center gap-4 border border-gray-100 dark:border-white/10 animate-bounce" style={{ animationDuration: '3s' }}>
@@ -159,16 +191,16 @@ const Landing = () => {
                     <div className="flex flex-col lg:flex-row items-center gap-16">
                         <div className="flex-1 order-2 lg:order-1">
                             <div className="relative rounded-3xl overflow-hidden ring-1 ring-black/5 dark:ring-white/10">
-                                <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=1600" alt="African students collaborating" className="w-full h-full object-cover" />
+                                <img src={heroStudent} alt="African students collaborating" className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                             </div>
                         </div>
-                        <div className="flex-1 order-1 lg:order-2">
+                        <div className="flex-1 order-1 lg:order-2 text-center lg:text-left">
                             <h2 className="text-4xl lg:text-5xl font-[1000] tracking-tighter mb-6">BUILT FOR NIGERIAN <span className="text-[#FF6B00] italic">STUDENTS.</span></h2>
                             <p className="text-xl text-gray-600 dark:text-gray-400 font-medium mb-8 leading-relaxed">
                                 Never blindly apply again. We use advanced algorithms to match your actual skills, projects, and ambitions directly to companies that value them. Stand out on merit, build your portfolio, and start your career before you even graduate.
                             </p>
-                            <ul className="space-y-4 mb-8">
+                            <ul className="space-y-4 mb-8 text-left inline-block lg:block">
                                 {['Skill-based matching system', '100% verified opportunities', 'Direct messaging with recruiters'].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3 font-bold text-gray-800 dark:text-gray-200">
                                         <div className="bg-[#FF6B00]/10 p-1 rounded-full"><CheckCircle size={16} className="text-[#FF6B00]" /></div>
@@ -176,20 +208,22 @@ const Landing = () => {
                                     </li>
                                 ))}
                             </ul>
-                            <Link to="/register?role=student" className="inline-flex items-center gap-2 text-lg font-black text-[#FF6B00] hover:text-gray-900 dark:hover:text-white transition-colors group">
-                                EXPLORE OPPORTUNITIES <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                            </Link>
+                            <div className="mt-4">
+                                <Link to="/register?role=student" className="inline-flex items-center gap-2 text-lg font-black text-[#FF6B00] hover:text-gray-900 dark:hover:text-white transition-colors group">
+                                    EXPLORE OPPORTUNITIES <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                            </div>
                         </div>
                     </div>
 
                     {/* Feature 2: Companies */}
                     <div className="flex flex-col lg:flex-row items-center gap-16">
-                        <div className="flex-1">
+                        <div className="flex-1 text-center lg:text-left">
                             <h2 className="text-4xl lg:text-5xl font-[1000] tracking-tighter mb-6">MADE FOR <span className="text-[#FF6B00] italic">EMPLOYERS.</span></h2>
                             <p className="text-xl text-gray-600 dark:text-gray-400 font-medium mb-8 leading-relaxed">
                                 Access an exclusive, vetted pool of Nigeria's most driven young professionals. From summer interns to your future leadership pipeline, find candidates actively building the skills your company needs.
                             </p>
-                            <ul className="space-y-4 mb-8">
+                            <ul className="space-y-4 mb-8 text-left inline-block lg:block">
                                 {['Filter by verifiable skills', 'Post roles in seconds', 'Streamlined applicant tracking'].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3 font-bold text-gray-800 dark:text-gray-200">
                                         <div className="bg-[#FF6B00]/10 p-1 rounded-full"><CheckCircle size={16} className="text-[#FF6B00]" /></div>
@@ -197,18 +231,41 @@ const Landing = () => {
                                     </li>
                                 ))}
                             </ul>
-                            <Link to="/register?role=recruiter" className="inline-flex items-center gap-2 text-lg font-black text-[#FF6B00] hover:text-gray-900 dark:hover:text-white transition-colors group">
-                                POST AN INTERNSHIP <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                            </Link>
+                            <div className="mt-4">
+                                <Link to="/register?role=recruiter" className="inline-flex items-center gap-2 text-lg font-black text-[#FF6B00] hover:text-gray-900 dark:hover:text-white transition-colors group">
+                                    POST AN INTERNSHIP <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                            </div>
                         </div>
                         <div className="flex-1">
                             <div className="relative rounded-3xl overflow-hidden ring-1 ring-black/5 dark:ring-white/10">
-                                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=1600" alt="Black professional recruiter interviewing" className="w-full h-full object-cover" />
+                                <img src={heroRecruiter} alt="Black professional recruiter interviewing" className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                             </div>
                         </div>
                     </div>
                 </div>
+
+                {/* Testimonial Section */}
+                <section className="py-24 lg:py-64 px-6 text-center">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                    >
+                        <PieChart size={40} className="mx-auto mb-8 md:mb-16 text-[#FF6B00] opacity-30" />
+                        <h2 className="text-2xl md:text-5xl lg:text-7xl font-black tracking-tight leading-tight italic max-w-5xl mx-auto uppercase">
+                            "InternMatch has completely changed our <span className="text-[#FF6B00]">talent pipeline</span>. We look for skills, not CVs."
+                        </h2>
+                        <div className="mt-12 md:mt-16 flex flex-col items-center">
+                            <div className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-zinc-200 dark:bg-zinc-800 mb-4 md:mb-6 overflow-hidden border-4 border-[#FF6B00]/20">
+                                <img src={testimonialAvatar} alt="Avatar" className="w-full h-full object-cover" />
+                            </div>
+                            <div className="font-black uppercase tracking-widest text-base md:text-lg">Alexander Vogt</div>
+                            <div className="text-[#FF6B00] font-black text-xs md:text-sm uppercase tracking-widest mt-1 md:mt-2">Head of Engineering, Volaris</div>
+                        </div>
+                    </motion.div>
+                </section>
 
                 {/* Bento Grid */}
                 <div className="mt-32 lg:mt-40">
@@ -270,24 +327,23 @@ const Landing = () => {
                         <div className="text-3xl font-[1000] tracking-tighter italic uppercase text-gray-900 dark:text-white mb-4">INTERNMATCH<span className="text-[#FF6B00]">.</span></div>
                         <p className="text-gray-500 font-medium max-w-sm">The exclusive bridge between verified Nigerian talent and forward-thinking organizations.</p>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-12">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-12 text-sm uppercase tracking-widest font-bold">
                         <div className="flex flex-col gap-4">
-                            <h4 className="font-black text-sm uppercase tracking-widest text-gray-900 dark:text-white">Product</h4>
-                            <Link to="/register?role=student" className="text-gray-500 hover:text-[#FF6B00] font-medium transition-colors">For Students</Link>
-                            <Link to="/register?role=recruiter" className="text-gray-500 hover:text-[#FF6B00] font-medium transition-colors">For Recruiters</Link>
-                            <Link to="/register?role=company" className="text-gray-500 hover:text-[#FF6B00] font-medium transition-colors">For Companies</Link>
-                            <Link to="/pricing" className="text-gray-500 hover:text-[#FF6B00] font-medium transition-colors">Pricing</Link>
+                            <h4 className="text-gray-900 dark:text-white">Product</h4>
+                            <Link to="/register?role=student" className="text-gray-500 hover:text-[#FF6B00] transition-colors">For Students</Link>
+                            <Link to="/register?role=recruiter" className="text-gray-500 hover:text-[#FF6B00] transition-colors">For Recruiters</Link>
+                            <Link to="/register?role=company" className="text-gray-500 hover:text-[#FF6B00] transition-colors">For Companies</Link>
                         </div>
                         <div className="flex flex-col gap-4">
-                            <h4 className="font-black text-sm uppercase tracking-widest text-gray-900 dark:text-white">Company</h4>
-                            <Link to="/about" className="text-gray-500 hover:text-[#FF6B00] font-medium transition-colors">About Us</Link>
-                            <Link to="/contact" className="text-gray-500 hover:text-[#FF6B00] font-medium transition-colors">Contact</Link>
-                            <Link to="/careers" className="text-gray-500 hover:text-[#FF6B00] font-medium transition-colors">Careers</Link>
+                            <h4 className="text-gray-900 dark:text-white">Company</h4>
+                            <Link to="/about" className="text-gray-500 hover:text-[#FF6B00] transition-colors">About Us</Link>
+                            <Link to="/contact" className="text-gray-500 hover:text-[#FF6B00] transition-colors">Contact</Link>
+                            <Link to="/careers" className="text-gray-500 hover:text-[#FF6B00] transition-colors">Careers</Link>
                         </div>
                         <div className="flex flex-col gap-4">
-                            <h4 className="font-black text-sm uppercase tracking-widest text-gray-900 dark:text-white">Legal</h4>
-                            <Link to="/privacy" className="text-gray-500 hover:text-[#FF6B00] font-medium transition-colors">Privacy Policy</Link>
-                            <Link to="/terms" className="text-gray-500 hover:text-[#FF6B00] font-medium transition-colors">Terms of Service</Link>
+                            <h4 className="text-gray-900 dark:text-white">Legal</h4>
+                            <Link to="/privacy" className="text-gray-500 hover:text-[#FF6B00] transition-colors">Privacy</Link>
+                            <Link to="/terms" className="text-gray-500 hover:text-[#FF6B00] transition-colors">Terms</Link>
                         </div>
                     </div>
                 </div>
