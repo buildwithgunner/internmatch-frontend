@@ -19,8 +19,8 @@ function ForgotPassword() {
     setSuccess('');
 
     try {
-      await api.post('/forgot-password', { email, role });
-      setSuccess('If an account exists, you will receive an OTP.');
+      const response = await api.post('/forgot-password', { email, role });
+      setSuccess(response.data.message || 'An OTP code has been sent to your email address.');
 
       setTimeout(() => {
         navigate(`/reset-password?email=${encodeURIComponent(email)}&role=${encodeURIComponent(role)}`);

@@ -16,7 +16,15 @@ import {
     ShieldCheck,
     Search,
     PieChart,
-    CheckCircle
+    CheckCircle,
+    ChevronRight,
+    ArrowUpRight,
+    Quote,
+    Instagram,
+    Twitter,
+    Linkedin,
+    GraduationCap,
+    Star
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
@@ -34,7 +42,7 @@ const Landing = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            // Logic for scrolled state if needed, though HEAD didn't show a 'scrolled' variable usage in the nav in my previous view
+            // Add scroll logic if needed
         };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
@@ -325,7 +333,16 @@ const Landing = () => {
                 <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
                     <div>
                         <div className="text-3xl font-[1000] tracking-tighter italic uppercase text-gray-900 dark:text-white mb-4">INTERNMATCH<span className="text-[#FF6B00]">.</span></div>
-                        <p className="text-gray-500 font-medium max-w-sm">The exclusive bridge between verified Nigerian talent and forward-thinking organizations.</p>
+                        <p className="max-w-sm font-bold text-gray-500 text-base md:text-lg leading-relaxed mb-8 md:mb-10">
+                            Bridging the gap between ambitious global talent and high-performance organizations.
+                        </p>
+                        <div className="flex gap-4 md:gap-6">
+                            {[Linkedin, Twitter, Instagram].map((Icon, i) => (
+                                <Link key={i} className="p-3 md:p-4 bg-zinc-100 dark:bg-white/5 rounded-xl md:rounded-2xl hover:bg-[#FF6B00] hover:text-white transition-all">
+                                    <Icon size={20} />
+                                </Link>
+                            ))}
+                        </div>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-12 text-sm uppercase tracking-widest font-bold">
                         <div className="flex flex-col gap-4">

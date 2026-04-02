@@ -10,7 +10,13 @@ import Button from "../../components/ui/Button.jsx";
  */
 function Register({ restrictedRole = null }) {
   const [searchParams] = useSearchParams();
-  const initialRole = restrictedRole || searchParams.get("role") || "student";
+  const rawRole = restrictedRole || searchParams.get("role") || "student";
+
+  // Normalize role (handle plural to singular mismatch)
+  const role = rawRole.toLowerCase() === 'students' ? 'student' :
+    rawRole.toLowerCase() === 'recruiters' ? 'recruiter' :
+      rawRole.toLowerCase() === 'companies' ? 'company' :
+        rawRole.toLowerCase();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -42,7 +48,6 @@ function Register({ restrictedRole = null }) {
   const isMatch = password !== "" && password === passwordConfirmation;
   const isLengthValid = password.length >= 8;
 
-  const role = initialRole;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
