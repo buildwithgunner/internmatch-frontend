@@ -340,7 +340,7 @@ function PostInternship({ mode = 'company' }) {
                   label="Location *"
                   value={formData.location}
                   onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                  placeholder="Lagos, Nigeria / Remote / Hybrid"
+                  placeholder="New York, USA / Remote / Hybrid"
                   required
                 />
 

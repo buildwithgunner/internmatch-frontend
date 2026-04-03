@@ -124,11 +124,11 @@ const Landing = () => {
                         </div>
                         <h1 className="text-5xl sm:text-6xl lg:text-8xl font-[1000] tracking-tighter leading-[0.9] text-gray-900 dark:text-white mb-8">
                             LAUNCH YOUR <br className="hidden lg:block" />
-                            CAREER IN <br className="hidden lg:block" />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B00] to-yellow-500 italic">NIGERIA.</span>
+                            CAREER <br className="hidden lg:block" />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B00] to-yellow-500 italic">WORLDWIDE.</span>
                         </h1>
                         <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-400 font-medium max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed">
-                            Stop sending resumes into the void. Connect directly with vetted, fast-growing companies seeking top-tier Nigerian talent. Your skills matter more than your major.
+                            Stop sending resumes into the void. Connect directly with vetted, fast-growing companies seeking top-tier global talent. Your skills matter more than your major.
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
@@ -171,7 +171,7 @@ const Landing = () => {
                         {/* High-end Bento/Masonry Image Grid */}
                         <div className="relative h-[600px] w-full">
                             <div className="absolute top-0 right-0 w-[65%] h-[55%] rounded-3xl overflow-hidden shadow-2xl z-10 border border-white/20">
-                                <img src={heroStudent} alt="Nigerian students studying" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                                <img src={heroStudent} alt="Students studying" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                             </div>
                             <div className="absolute bottom-10 left-0 w-[55%] h-[45%] rounded-3xl overflow-hidden shadow-2xl z-20 border border-white/20">
                                 <img src={heroRecruiter} alt="Young Black Professional" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
@@ -204,7 +204,7 @@ const Landing = () => {
                             </div>
                         </div>
                         <div className="flex-1 order-1 lg:order-2 text-center lg:text-left">
-                            <h2 className="text-4xl lg:text-5xl font-[1000] tracking-tighter mb-6">BUILT FOR NIGERIAN <span className="text-[#FF6B00] italic">STUDENTS.</span></h2>
+                            <h2 className="text-4xl lg:text-5xl font-[1000] tracking-tighter mb-6">BUILT FOR GLOBAL <span className="text-[#FF6B00] italic">STUDENTS.</span></h2>
                             <p className="text-xl text-gray-600 dark:text-gray-400 font-medium mb-8 leading-relaxed">
                                 Never blindly apply again. We use advanced algorithms to match your actual skills, projects, and ambitions directly to companies that value them. Stand out on merit, build your portfolio, and start your career before you even graduate.
                             </p>
@@ -229,7 +229,7 @@ const Landing = () => {
                         <div className="flex-1 text-center lg:text-left">
                             <h2 className="text-4xl lg:text-5xl font-[1000] tracking-tighter mb-6">MADE FOR <span className="text-[#FF6B00] italic">EMPLOYERS.</span></h2>
                             <p className="text-xl text-gray-600 dark:text-gray-400 font-medium mb-8 leading-relaxed">
-                                Access an exclusive, vetted pool of Nigeria's most driven young professionals. From summer interns to your future leadership pipeline, find candidates actively building the skills your company needs.
+                                Access an exclusive, vetted pool of the world's most driven young professionals. From summer interns to your future leadership pipeline, find candidates actively building the skills your company needs.
                             </p>
                             <ul className="space-y-4 mb-8 text-left inline-block lg:block">
                                 {['Filter by verifiable skills', 'Post roles in seconds', 'Streamlined applicant tracking'].map((item, i) => (
@@ -294,8 +294,8 @@ const Landing = () => {
                             <div className="bg-blue-500/10 w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
                                 <Globe size={28} className="text-blue-500" />
                             </div>
-                            <h3 className="text-2xl font-black mb-3 text-gray-900 dark:text-white">Nationwide Reach</h3>
-                            <p className="text-gray-600 dark:text-gray-400 font-medium">Whether you're in Lagos, Abuja, or Port Harcourt, find remote and on-site roles easily across Nigeria.</p>
+                            <h3 className="text-2xl font-black mb-3 text-gray-900 dark:text-white">Global Reach</h3>
+                            <p className="text-gray-600 dark:text-gray-400 font-medium">Find remote and on-site roles easily across the globe, connected to high-performance organizations.</p>
                         </div>
                         <div className="bg-white dark:bg-[#111] p-8 rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm hover:border-[#FF6B00]/50 transition-colors">
                             <div className="bg-purple-500/10 w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
@@ -321,7 +321,7 @@ const Landing = () => {
                     READY TO START?
                 </h2>
                 <p className="text-xl font-medium text-white/90 mb-10 max-w-xl">
-                    Join thousands of Nigerian students who have kickstarted their careers through InternMatch.
+                    Join thousands of students worldwide who have kickstarted their careers through InternMatch.
                 </p>
                 <Link to="/register?role=student" className="bg-white text-black px-12 py-5 rounded-2xl font-black text-xl hover:scale-105 transition-transform shadow-2xl">
                     CREATE FREE ACCOUNT
@@ -366,7 +366,7 @@ const Landing = () => {
                 </div>
                 <div className="max-w-[1400px] mx-auto mt-16 pt-8 border-t border-gray-100 dark:border-white/10 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-gray-500 font-medium text-sm">© {new Date().getFullYear()} InternMatch Inc. All rights reserved.</p>
-                    <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">Built in Nigeria</p>
+                    <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">Built for the World</p>
                 </div>
             </footer>
         </div>
