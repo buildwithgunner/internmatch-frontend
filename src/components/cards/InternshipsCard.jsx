@@ -18,7 +18,7 @@ function InternshipCard({ internship }) {
 
   const company = internship.company || {};
   const companyLogo = company.logo_path
-    ? `http://localhost:8000/storage/${company.logo_path}`
+    ? `https://internmatch-backend-api.up.railway.app/storage/${company.logo_path}`
     : null;
 
   const handleQuickApply = () => {

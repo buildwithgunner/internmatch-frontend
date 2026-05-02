@@ -42,7 +42,7 @@ function CompanyProfile() {
         });
 
         if (company.logo_path) {
-          const fullUrl = `http://localhost:8000/storage/${company.logo_path}`;
+          const fullUrl = `https://internmatch-backend-api.up.railway.app/storage/${company.logo_path}`;
           setPreviewLogo(fullUrl);
         }
       } catch (err) {
@@ -206,7 +206,7 @@ function CompanyProfile() {
   const isComplete = completeness === 100;
 
   const logoUrl = previewLogo ||
-    (formData.logo_path ? `http://localhost:8000/storage/${formData.logo_path}` :
+    (formData.logo_path ? `https://internmatch-backend-api.up.railway.app/storage/${formData.logo_path}` :
       "https://img.freepik.com/free-vector/bird-colorful-logo-gradient-designs_343694-2506.jpg");
 
   if (loading) {

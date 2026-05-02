@@ -114,7 +114,7 @@ const RecruiterDashboard = () => {
                                     <div className="flex items-center gap-6">
                                         <div className="w-14 h-14 rounded-xl bg-slate-200 dark:bg-slate-800 overflow-hidden flex items-center justify-center">
                                             {student.avatar ? (
-                                                <img src={`http://localhost:8000/storage/${student.avatar}`} alt="Avatar" className="w-full h-full object-cover" />
+                                                <img src={`https://internmatch-backend-api.up.railway.app/storage/${student.avatar}`} alt="Avatar" className="w-full h-full object-cover" />
                                             ) : (
                                                 <Users size={20} className="text-slate-400" />
                                             )}

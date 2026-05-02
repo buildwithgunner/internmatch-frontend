@@ -17,7 +17,7 @@ const getBaseURL = () => {
   }
   
   // 3. Last fallback (Standard Localhost)
-  return 'http://localhost:8000/api/v1';
+  return 'https://internmatch-backend-api.up.railway.app/api/v1';
 };
 
 const baseURL = getBaseURL();

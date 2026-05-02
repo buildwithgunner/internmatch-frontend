@@ -10,8 +10,15 @@ import Button from "../../components/ui/Button.jsx";
 function Login({ restrictedRole = null }) {
   const [searchParams] = useSearchParams();
   const location = useLocation();
-  const initialRole = restrictedRole || searchParams.get('role') || location.state?.role || 'student';
-  const [role, setRole] = useState(initialRole);
+  const rawRole = restrictedRole || searchParams.get('role') || location.state?.role || 'student';
+
+  // Normalize role (handle plural to singular mismatch)
+  const normalizedRole = rawRole.toLowerCase() === 'students' ? 'student' :
+    rawRole.toLowerCase() === 'recruiters' ? 'recruiter' :
+      rawRole.toLowerCase() === 'companies' ? 'company' :
+        rawRole.toLowerCase();
+
+  const [role, setRole] = useState(normalizedRole);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);

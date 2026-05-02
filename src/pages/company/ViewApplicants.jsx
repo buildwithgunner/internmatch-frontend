@@ -419,7 +419,7 @@ function ViewApplicants() {
                       {selectedApplicant.documents.map(doc => (
                         <a
                           key={doc.id}
-                          href={`http://localhost:8000/storage/${doc.file_path}`}
+                          href={`https://internmatch-backend-api.up.railway.app/storage/${doc.file_path}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center justify-between p-5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors border border-slate-200/50 dark:border-slate-700/40"

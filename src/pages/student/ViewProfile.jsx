@@ -64,7 +64,7 @@ function ViewProfile() {
               <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white/40 shadow-2xl flex-shrink-0 bg-white/20 backdrop-blur-sm">
                 {profile.avatar ? (
                   <img
-                    src={`http://localhost:8000/storage/${profile.avatar}`}
+                    src={`https://internmatch-backend-api.up.railway.app/storage/${profile.avatar}`}
                     alt={profile.name}
                     className="w-full h-full object-cover"
                   />
@@ -261,7 +261,7 @@ function ViewProfile() {
                   {profile.documents.map((doc) => (
                     <a
                       key={doc.id}
-                      href={`http://localhost:8000/storage/${doc.file_path}`}
+                      href={`https://internmatch-backend-api.up.railway.app/storage/${doc.file_path}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center justify-between p-5 bg-slate-50/70 dark:bg-slate-800/30 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-all group border border-slate-200/50 dark:border-slate-700/40"

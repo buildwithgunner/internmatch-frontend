@@ -260,7 +260,7 @@ const SavedCandidates = () => {
                                                 {selectedCandidate.documents.map(doc => (
                                                     <a
                                                         key={doc.id}
-                                                        href={`http://localhost:8000/storage/${doc.file_path}`}
+                                                        href={`https://internmatch-backend-api.up.railway.app/storage/${doc.file_path}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="flex items-center justify-between p-8 bg-slate-50 dark:bg-slate-800 rounded-[2.5rem] hover:bg-orange-600 hover:text-white transition-all group/doc border border-slate-100 dark:border-slate-700"
